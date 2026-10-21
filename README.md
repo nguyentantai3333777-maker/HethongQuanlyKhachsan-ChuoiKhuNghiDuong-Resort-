@@ -1,6 +1,5 @@
 1. Giới thiệu dự án
 Mini Social Network là dự án xây dựng một hệ thống mạng xã hội mini bằng ngôn ngữ C++, phục vụ mục đích học tập và thực hành các kiến thức về Lập trình hướng đối tượng, Cấu trúc dữ liệu và Giải thuật.
-
 Hệ thống mô phỏng các chức năng cơ bản của một mạng xã hội, bao gồm quản lý người dùng, kết bạn, tìm kiếm và gợi ý bạn bè, phân tích mối quan hệ trong mạng lưới và tương tác với người dùng thông qua giao diện console.
 
 2. Mục tiêu dự án
