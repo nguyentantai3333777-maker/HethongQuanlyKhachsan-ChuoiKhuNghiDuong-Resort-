@@ -1,267 +1,148 @@
 #include <iostream>
 #include <string>
-#include <vector>
-#include <unordered_map>
-#include <fstream>
-#include <algorithm>
-#include <ctime>
+#include <iomanip>
 
 using namespace std;
 
 // ==========================================
-// 1. CẤU TRÚC DỮ LIỆU HỖ TRỢ (QUEUE & STACK)
+// 1. LỚP CƠ SỞ TRỪU TƯỢNG: DichVu
 // ==========================================
-template <typename T>
-class Queue
-{
+class DichVu {
 private:
-    vector<T> data;
+    string maDichVu;
+
+protected:
+    string tenDichVu;
+    double donGia;
+    string moTaDichVu;
 
 public:
-    void enqueue(T item) { data.push_back(item); }
-    void dequeue()
-    {
-        if (!isEmpty())
-            data.erase(data.begin());
-    }
-    T front() const { return data.front(); }
-    bool isEmpty() const { return data.empty(); }
-    size_t size() const { return data.size(); }
-};
+    DichVu() : maDichVu(""), tenDichVu(""), donGia(0.0), moTaDichVu("") {}
+    
+    DichVu(string ma, string ten, double gia, string moTa) 
+        : maDichVu(ma), tenDichVu(ten), donGia(gia), moTaDichVu(moTa) {}
 
-template <typename T>
-class Stack
-{
-private:
-    vector<T> data;
+    virtual ~DichVu() {}
 
-public:
-    void push(T item) { data.push_back(item); }
-    void pop()
-    {
-        if (!isEmpty())
-            data.pop_back();
-    }
-    T top() const { return data.back(); }
-    bool isEmpty() const { return data.empty(); }
-    size_t size() const { return data.size(); }
-};
-
-// ==========================================
-// 2. BIỂU DIỄN BÀI VIẾT (POST)
-// ==========================================
-class Post
-{
-private:
-    int postId;
-    int authorId;
-    string content;
-    string timestamp;
-
-public:
-    Post() : postId(0), authorId(0), content(""), timestamp("") {}
-    Post(int id, int author, string text, string time)
-        : postId(id), authorId(author), content(text), timestamp(time) {}
-
-    int getPostId() const { return postId; }
-    int getAuthorId() const { return authorId; }
-    string getContent() const { return content; }
-    string getTimestamp() const { return timestamp; }
-
-    bool containsKeyword(const string &keyword) const
-    {
-        return content.find(keyword) != string::npos;
+    // Phương thức ảo tính chi phí
+    virtual double tinhChiPhi(int soLuong) const {
+        return donGia * soLuong;
     }
 
-    void display() const
-    {
-        cout << "[Bai viet #" << postId << "] Tac gia ID: " << authorId
-             << " | Thoi gian: " << timestamp << endl;
-        cout << "Noi dung: " << content << endl;
-        cout << "--------------------------------------------------\n";
+    // Phương thức ảo lấy loại dịch vụ
+    virtual string layLoaiDichVu() const = 0;
+
+    // Getters & Setters
+    string layMaDichVu() const { return maDichVu; }
+    string layTenDichVu() const { return tenDichVu; }
+    double layDonGia() const { return donGia; }
+    void datDonGia(double gia) { donGia = gia; }
+
+    // Operator xuất stream
+    friend ostream& operator<<(ostream& os, const DichVu& dv) {
+        os << "[" << dv.maDichVu << "] " << dv.tenDichVu 
+           << " | Đơn giá: " << fixed << setprecision(0) << dv.donGia << " VNĐ"
+           << " | Mô tả: " << dv.moTaDichVu;
+        return os;
     }
 };
 
 // ==========================================
-// 3. QUẢN LÝ BÀI VIẾT (POSTMANAGER)
+// 2. LỚP DỊCH VỤ CỤ THỂ: AmThuc
 // ==========================================
-class PostManager
-{
-private:
-    unordered_map<int, Post> postsById;
-    unordered_map<int, vector<int>> postsByAuthor;
-    int autoPostId;
+class AmThuc : public DichVu {
+protected:
+    string loaiBuaAn;
+    int soSuatAn;
+    double phiPhucVu;
 
 public:
-    PostManager() : autoPostId(1) {}
+    AmThuc() : DichVu(), loaiBuaAn(""), soSuatAn(0), phiPhucVu(0.0) {}
 
-    int createPost(int authorId, const string &content)
-    {
-        time_t now = time(0);
-        string timeStr = ctime(&now);
-        timeStr.pop_back(); // Xóa ký tự newline
+    AmThuc(string ma, string ten, double gia, string moTa, string loaiBua, int soSuat, double phiDichVu)
+        : DichVu(ma, ten, gia, moTa), loaiBuaAn(loaiBua), soSuatAn(soSuat), phiPhucVu(phiDichVu) {}
 
-        int id = autoPostId++;
-        Post newPost(id, authorId, content, timeStr);
-        postsById[id] = newPost;
-        postsByAuthor[authorId].push_back(id);
-        return id;
+    // Ghi đè phương thức tính chi phí: donGia * soLuong + phiPhucVu
+    double tinhChiPhi(int soLuong) const override {
+        return (donGia * soLuong) + phiPhucVu;
     }
 
-    bool editPost(int postId, int authorId, const string &newContent)
-    {
-        if (postsById.find(postId) != postsById.end())
-        {
-            if (postsById[postId].getAuthorId() == authorId)
-            {
-                time_t now = time(0);
-                string timeStr = ctime(&now);
-                timeStr.pop_back();
-                postsById[postId] = Post(postId, authorId, newContent, timeStr + " (Da chinh sửa)");
-                return true;
-            }
-        }
-        return false;
-    }
-
-    bool deletePost(int postId, int authorId)
-    {
-        if (postsById.find(postId) != postsById.end())
-        {
-            if (postsById[postId].getAuthorId() == authorId)
-            {
-                postsById.erase(postId);
-                auto &list = postsByAuthor[authorId];
-                list.erase(remove(list.begin(), list.end(), postId), list.end());
-                return true;
-            }
-        }
-        return false;
-    }
-
-    vector<Post> getPostsByUser(int authorId)
-    {
-        vector<Post> result;
-        if (postsByAuthor.find(authorId) != postsByAuthor.end())
-        {
-            for (int id : postsByAuthor[authorId])
-            {
-                result.push_back(postsById[id]);
-            }
-        }
-        return result;
-    }
-
-    vector<Post> getFeed(const vector<int> &friendIds)
-    {
-        vector<Post> feed;
-        for (int friendId : friendIds)
-        {
-            vector<Post> userPosts = getPostsByUser(friendId);
-            feed.insert(feed.end(), userPosts.begin(), userPosts.end());
-        }
-        return feed;
+    string layLoaiDichVu() const override {
+        return "Ẩm thực (" + loaiBuaAn + ")";
     }
 };
 
 // ==========================================
-// 4. TÌM KIẾM BÀI VIẾT (POSTSEARCHSERVICE)
+// 3. LỚP DỊCH VỤ CỤ THỂ: Spa
 // ==========================================
-class PostSearchService
-{
+class Spa : public DichVu {
+protected:
+    int thoiLuongPhut;
+    string loaiLieuTrinh;
+    string tenKyThuatVien;
+
 public:
-    static vector<Post> searchByKeyword(const vector<Post> &allPosts, const string &keyword)
-    {
-        vector<Post> result;
-        for (const auto &post : allPosts)
-        {
-            if (post.containsKeyword(keyword))
-            {
-                result.push_back(post);
-            }
-        }
-        return result;
+    Spa() : DichVu(), thoiLuongPhut(0), loaiLieuTrinh(""), tenKyThuatVien("") {}
+
+    Spa(string ma, string ten, double gia, string moTa, int thoiLuong, string lieuTrinh, string ktv)
+        : DichVu(ma, ten, gia, moTa), thoiLuongPhut(thoiLuong), loaiLieuTrinh(lieuTrinh), tenKyThuatVien(ktv) {}
+
+    double tinhChiPhi(int soLuong) const override {
+        return donGia * soLuong;
+    }
+
+    string layLoaiDichVu() const override {
+        return "Spa & Trị liệu";
     }
 };
 
 // ==========================================
-// 5. QUẢN LÝ ĐỌC GHI FILE (FILEMANAGER)
+// 4. LỚP DỊCH VỤ CỤ THỂ: TourTuyen
 // ==========================================
-class FileManager
-{
+class TourTuyen : public DichVu {
+protected:
+    string diaDiem;
+    int soNguoiThamGia;
+    string ngayKhoiHanh;
+    double phiHuongDanVien;
+
 public:
-    static bool saveUsers(const string &filename, const vector<pair<int, string>> &users)
-    {
-        ofstream outFile(filename);
-        if (!outFile.is_open())
-            return false;
-        for (const auto &u : users)
-        {
-            outFile << u.first << "," << u.second << "\n";
-        }
-        outFile.close();
-        return true;
+    TourTuyen() : DichVu(), diaDiem(""), soNguoiThamGia(0), ngayKhoiHanh(""), phiHuongDanVien(0.0) {}
+
+    TourTuyen(string ma, string ten, double gia, string moTa, string dd, int soNguoi, string ngay, double phiHDV)
+        : DichVu(ma, ten, gia, moTa), diaDiem(dd), soNguoiThamGia(soNguoi), ngayKhoiHanh(ngay), phiHuongDanVien(phiHDV) {}
+
+    // Ghi đè phương thức tính chi phí: donGia * soLuong + phiHuongDanVien
+    double tinhChiPhi(int soLuong) const override {
+        return (donGia * soLuong) + phiHuongDanVien;
     }
 
-    static bool saveFriendships(const string &filename, const vector<pair<int, int>> &edges)
-    {
-        ofstream outFile(filename);
-        if (!outFile.is_open())
-            return false;
-        for (const auto &e : edges)
-        {
-            outFile << e.first << "," << e.second << "\n";
-        }
-        outFile.close();
-        return true;
+    string layLoaiDichVu() const override {
+        return "Tour du lịch";
     }
 };
 
 // ==========================================
-// MAIN DEMO MODULE 3.5 & CONSOLE UI
+// HÀM MAIN MINH HỌA (DEMO)
 // ==========================================
-int main()
-{
-    PostManager postManager;
+int main() {
+    // Khởi tạo các dịch vụ
+    AmThuc buffet("DV01", "Buffet Hải Sản Cao Cấp", 500000, "Buffet tối", "Tối", 2, 50000);
+    Spa massage("DV02", "Massage Đá Nóng", 800000, "Thư giãn toàn thân", 60, "Toàn thân", "Nguyễn Văn A");
+    TourTuyen tour("DV03", "Tour Tham Quan Đảo", 1200000, "Khám phá đảo ngọc", "Phú Quốc", 4, "15/10/2026", 300000);
 
-    // Khởi tạo bài viết mẫu
-    int p1 = postManager.createPost(101, "Xin chao moi nguoi, day la bai viet dau tien!");
-    int p2 = postManager.createPost(102, "Hom nay thoi tiet dep qua, di cafe khong?");
-    int p3 = postManager.createPost(101, "C++ va Thuat toan rat thu vi!");
+    // Mảng con trỏ lớp cơ sở để minh họa tính Đa hình
+    DichVu* danhSachDV[] = { &buffet, &massage, &tour };
 
-    cout << "=== 3.5. DEMO MODULE UI VA CAC MODULE HO TRO ===\n\n";
+    cout << "================ DANH SÁCH DỊCH VỤ KHÁCH SẠN/RESORT ================\n\n";
 
-    // 1. Hiển thị bài viết của người dùng 101
-    cout << "--- BAI VIET CUA USER 101 ---\n";
-    vector<Post> userPosts = postManager.getPostsByUser(101);
-    for (const auto &post : userPosts)
-    {
-        post.display();
-    }
-
-    // 2. Hiển thị Bảng tin (Feed) của bạn bè (User 101 xem feed gồm bài của User 102)
-    cout << "--- BANG TIN (FEED) CUA USER 101 --- \n";
-    vector<int> friends = {102};
-    vector<Post> feed = postManager.getFeed(friends);
-    for (const auto &post : feed)
-    {
-        post.display();
-    }
-
-    // 3. Tìm kiếm bài viết theo từ khóa
-    cout << "--- TIM KIEM BAI VIET TU KHOA 'C++' ---\n";
-    vector<Post> searchResults = PostSearchService::searchByKeyword(userPosts, "C++");
-    for (const auto &post : searchResults)
-    {
-        post.display();
-    }
-
-    // 4. Lưu dữ liệu ra file
-    cout << "--- LUU DU LIEU FILE ---\n";
-    vector<pair<int, string>> users = {{101, "NguyenVanA"}, {102, "TranThiB"}};
-    if (FileManager::saveUsers("users.txt", users))
-    {
-        cout << "Da luu danh sach nguoi dung vao file 'users.txt' thanh cong!\n";
+    for (int i = 0; i < 3; ++i) {
+        int soLuongSuDung = 2; // Ví dụ khách dùng 2 suất/lần
+        cout << "Dịch vụ " << i + 1 << ": " << *danhSachDV[i] << endl;
+        cout << " -> Loại dịch vụ: " << danhSachDV[i]->layLoaiDichVu() << endl;
+        cout << " -> Tổng chi phí (" << soLuongSuDung << " lượt): " 
+             << fixed << setprecision(0) << danhSachDV[i]->tinhChiPhi(soLuongSuDung) << " VNĐ" << endl;
+        cout << "----------------------------------------------------------------------\n";
     }
 
     return 0;
