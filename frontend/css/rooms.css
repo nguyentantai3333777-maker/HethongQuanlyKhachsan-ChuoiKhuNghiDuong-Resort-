@@ -1,0 +1,53 @@
+/* =====================================================================
+   rooms.css - The phong trang quan tri (kieu Eagle: anh + than trang + dai nau),
+   lich dat phong va form dat phong
+   ===================================================================== */
+
+/* The phong quan tri: dung .room-card cua style.css, them so phong + nhan trang thai tren anh */
+.room-band--admin { padding: 0 0 26px; background: linear-gradient(to bottom, transparent 0, transparent 120px, var(--band) 120px); margin: 0 -28px; padding-left: 28px; padding-right: 28px; }
+.room-band--admin .room-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 20px; }
+.room-card__img .room-card__no { position: absolute; right: 12px; bottom: 10px; color: #fff; font: 500 34px/1 var(--font-display); text-shadow: 0 2px 10px rgba(0, 0, 0, .35); }
+.room-card__meta { font-size: 12px; color: var(--muted); margin-top: 4px; }
+.room-card__guest { min-height: 20px; margin: 4px 0 12px; font-size: 12.5px; color: #4c545c; }
+.room-card--admin .room-card__body { padding: 16px; }
+.room-card--admin .room-card__title { font-size: 17px; }
+.room-card--admin .room-card__foot { flex-wrap: nowrap; gap: 6px; padding-top: 12px; border-top: 1px solid var(--border-color); }
+.room-card--admin .room-card__foot .btn { flex: none; padding: 5px 8px; }
+.room-card--admin .room-card__foot .btn:nth-child(2) { flex: 1; }
+
+/* Lich dat phong: hang = phong, cot = ngay */
+.calendar { overflow-x: auto; }
+.calendar__grid { display: grid; min-width: 900px; font-size: 12.5px; }
+.calendar__cell { height: 44px; border-right: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); position: relative; }
+.calendar__head { height: 50px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: var(--surface-2); color: var(--muted); font-size: 12px; }
+.calendar__head b { color: var(--text-color); font-size: 14px; letter-spacing: 0; }
+.calendar__head.is-today { background: var(--primary-color); color: var(--on-primary); }
+.calendar__head.is-today b { color: inherit; }
+.calendar__room { display: flex; flex-direction: column; justify-content: center; padding: 0 12px; background: var(--surface); position: sticky; left: 0; z-index: 2; }
+.calendar__room b { font-size: 13px; }
+.calendar__room small { color: var(--muted); }
+.calendar__bar { position: absolute; top: 8px; bottom: 8px; z-index: 1; padding: 0 8px; display: flex; align-items: center; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-weight: 500; cursor: pointer; border-left: 3px solid; }
+.calendar__bar[data-st="0"] { background: var(--warn-bg); color: var(--warn); border-color: #c99a2e; }
+.calendar__bar[data-st="1"] { background: var(--info-bg); color: var(--info); border-color: var(--info); }
+.calendar__bar[data-st="2"] { background: var(--ok-bg); color: var(--ok); border-color: var(--ok); }
+
+/* Form dat phong: 2 cot, cot phai la tam tinh */
+.booking { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 24px; }
+.booking__summary { position: sticky; top: 0; align-self: start; }
+.room-pick { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; max-height: 260px; overflow: auto; padding: 2px; }
+.room-pick label { position: relative; display: flex; flex-direction: column; gap: 2px; padding: 10px 12px; border: 1px solid var(--border-color); cursor: pointer; font-size: 12.5px; background: var(--surface); }
+.room-pick label b { font-size: 14px; }
+.room-pick input { position: absolute; opacity: 0; pointer-events: none; }
+.room-pick label:has(input:checked) { border-color: var(--primary-color); background: var(--primary-light); box-shadow: inset 0 0 0 1px var(--primary-color); }
+.room-pick label.is-off { cursor: not-allowed; background: var(--surface-2); color: var(--muted); }
+.room-pick .why { color: var(--danger); }
+.svc-list { display: flex; flex-direction: column; gap: 6px; }
+.svc-row { display: grid; grid-template-columns: 1fr auto 96px; gap: 10px; align-items: center; padding: 8px 10px; border: 1px solid var(--border-color); font-size: 13px; }
+.svc-row input { width: 96px; padding: 6px 8px; border: 1px solid var(--border-color); text-align: right; }
+.suggest { border: 1px solid var(--border-color); max-height: 180px; overflow: auto; }
+.suggest button { display: block; width: 100%; text-align: left; padding: 8px 12px; border: 0; background: none; cursor: pointer; border-bottom: 1px solid var(--border-color); }
+.suggest button:hover, .suggest button.is-active { background: var(--primary-light); }
+.room-band--admin { border-radius: 0 0 var(--radius) var(--radius); }
+
+/* Khach o qua han: thanh lich do, phong bi khoa */
+.calendar__bar.is-overstay { background: var(--danger-bg) !important; color: var(--danger) !important; border-color: var(--danger) !important; background-image: repeating-linear-gradient(135deg, transparent 0 6px, rgba(177, 67, 64, .12) 6px 12px) !important; }

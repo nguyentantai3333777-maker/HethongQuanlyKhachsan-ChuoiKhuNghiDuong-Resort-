@@ -1,0 +1,428 @@
+/* =====================================================================
+   style.css - Nen tang dung chung cho website khach + trang quan tri
+   Bang mau chu dao: XANH DA TROI - VANG GOLD - XAM GHI. Anh that cua khach san lam diem nhan.
+   Phong cach than thien: chu thuong (khong in hoa toan bo), bo goc mem, khoang trang rong.
+   Mau phu doi theo menu qua [data-theme] (--primary-*).
+   ===================================================================== */
+:root {
+  /* Bang mau RESORT: nau espresso (khung) - vang gold (diem nhan) - xanh la nhat (tot/trong) - xanh duong (thong tin) - do (loi) */
+  --sky: #3f7ba6;
+  --sky-light: #e1eef7;
+  --gold: #c9a24a;          /* vang gold: nut "Dat phong", nhan noi bat */
+  --gold-dark: #a8822f;
+  --graphite: #3d3128;      /* nau espresso: sidebar, chan trang */
+  --graphite-dark: #2b221b;
+  --band: #6b5642;          /* dai nau am phia sau the phong */
+  --accent-soft: #8a6a3f;   /* icon thong so phong */
+  --checkbar: #3d3128;      /* thanh kiem tra phong trong */
+  --tint: #f6efe3;
+
+  --background: #f6f1e8;    /* nen kem am */
+  --surface: #fffdf9;
+  --surface-2: #faf6ee;
+  --text-color: #3a3129;
+  --heading: #2b2218;
+  --muted: #7a6e60;
+  --border-color: #e7dccb;
+
+  /* Mau trang thai */
+  --ok: #2f7d58;      --ok-bg: #e2f1e7;
+  --warn: #946600;    --warn-bg: #fbf0d4;
+  --info: #25699c;    --info-bg: #e1eef8;
+  --danger: #b14340;  --danger-bg: #f8e4e3;
+  --purple: #6b5a99;  --purple-bg: #ebe7f5;
+  --neutral: #6b6258; --neutral-bg: #efeae1;
+
+  /* Mac dinh (Dashboard): dong bronze */
+  --primary-color: #a8742d;
+  --primary-light: #f6ead6;
+  --primary-dark: #7d5320;
+  --on-primary: #ffffff;
+
+  --radius: 12px;
+  --radius-sm: 8px;
+  --radius-lg: 12px;
+  --shadow: 0 4px 18px rgba(60, 40, 20, .08);
+  --shadow-pop: 0 22px 50px rgba(40, 28, 16, .26);
+  --font: "Be Vietnam Pro", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --font-display: "Playfair Display", Georgia, "Times New Roman", serif;
+  --container: 1240px;
+}
+
+/* ---------- Mau chu dao theo trang (chi doi diem nhan; khung nau - kem giu nguyen) ---------- */
+[data-theme="dashboard"] { --primary-color: #a8742d; --primary-light: #f6ead6; --primary-dark: #7d5320; --on-primary: #fff; }
+[data-theme="rooms"]     { --primary-color: #4f8a62; --primary-light: #e3f1e8; --primary-dark: #356445; --on-primary: #fff; }
+[data-theme="customers"] { --primary-color: #3f7ba6; --primary-light: #e1eef7; --primary-dark: #2c5a7c; --on-primary: #fff; }
+[data-theme="bookings"]  { --primary-color: #c08b2c; --primary-light: #faf0d6; --primary-dark: #8a6215; --on-primary: #fff; }
+[data-theme="payments"]  { --primary-color: #9a7421; --primary-light: #f8efd3; --primary-dark: #6f5313; --on-primary: #fff; }
+[data-theme="services"]  { --primary-color: #8d6240; --primary-light: #f3e9df; --primary-dark: #664529; --on-primary: #fff; }
+[data-theme="staff"]     { --primary-color: #5b8696; --primary-light: #e4eef2; --primary-dark: #3f6070; --on-primary: #fff; }
+[data-theme="reports"]   { --primary-color: #7a5230; --primary-light: #f1e6da; --primary-dark: #543720; --on-primary: #fff; }
+[data-theme="settings"]  { --primary-color: #6b7480; --primary-light: #eceff2; --primary-dark: #4a525b; --on-primary: #fff; }
+
+/* ---------- Co ban ---------- */
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+body { margin: 0; font: 400 14px/1.6 var(--font); color: var(--text-color); background: var(--background); font-variant-numeric: tabular-nums; }
+h1, h2, h3, h4 { margin: 0; line-height: 1.2; font-family: var(--font-display); font-weight: 500; color: var(--heading); }
+p { margin: 0 0 .8em; }
+button, input, select, textarea { font: inherit; color: inherit; }
+a { color: var(--primary-dark); }
+img { max-width: 100%; display: block; }
+[hidden] { display: none !important; }
+.muted { color: var(--muted); }
+.num { text-align: right; white-space: nowrap; }
+.strong { font-weight: 600; }
+.container { width: 100%; max-width: var(--container); margin: 0 auto; padding: 0 28px; }
+.svg-ic { width: 18px; height: 18px; flex: none; stroke: currentColor; fill: none; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+:focus-visible { outline: 2px solid var(--primary-color); outline-offset: 2px; }
+.caps { }
+
+/* ---------- Tieu de muc (kieu "ROOMS & SUITES ... VIEW ALL") ---------- */
+.section-head { display: flex; align-items: center; gap: 16px; margin: 0 0 18px; }
+.section-head h2 { font-size: 22px; }
+.section-head .muted { font-size: 12.5px; }
+.section-head > :last-child:not(:first-child) { margin-left: auto; }
+
+/* ---------- Nut: vuong goc, chu in hoa gian chu ---------- */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 9px 18px; min-height: 38px; border: 1px solid var(--border-color); border-radius: var(--radius);
+  background: var(--surface); cursor: pointer; white-space: nowrap; text-decoration: none; color: var(--text-color);
+  font-size: 13px; font-weight: 600;
+  transition: background .15s, border-color .15s, color .15s;
+}
+.btn:hover { border-color: #c4ccd3; background: var(--surface-2); }
+.btn--primary { background: var(--primary-color); border-color: var(--primary-color); color: var(--on-primary); }
+.btn--primary:hover { background: var(--primary-dark); border-color: var(--primary-dark); color: #fff; }
+.btn--outline { background: transparent; border-color: #bfc6cd; color: var(--muted); }
+.btn--ghost { background: transparent; border-color: transparent; color: var(--primary-dark); }
+.btn--ghost:hover { background: var(--primary-light); border-color: transparent; }
+.btn--outline:hover { border-color: var(--primary-color); color: var(--primary-dark); background: transparent; }
+.btn--ghost-light { background: transparent; border-color: rgba(255, 255, 255, .85); color: #fff; }
+.btn--ghost-light:hover { background: rgba(255, 255, 255, .12); border-color: #fff; color: #fff; }
+.btn--gold { background: var(--gold); border-color: var(--gold); color: #fff; }
+.btn--gold:hover { background: #a3884f; border-color: #a3884f; color: #fff; }
+.btn--graphite { background: var(--band); border-color: var(--band); color: #fff; }
+.btn--graphite:hover { background: var(--graphite-dark); border-color: var(--graphite-dark); color: #fff; }
+.btn--danger { color: var(--danger); border-color: #ecc7c5; }
+.btn--danger:hover { background: var(--danger-bg); border-color: var(--danger); }
+.btn--danger-solid { background: var(--danger); border-color: var(--danger); color: #fff; }
+.btn--sm { padding: 5px 10px; min-height: 30px; font-size: 12px; }
+.btn--block { width: 100%; }
+.btn[disabled] { opacity: .5; cursor: not-allowed; }
+.actions { display: flex; gap: 6px; justify-content: flex-end; flex-wrap: nowrap; }
+
+.icon-btn {
+  display: inline-flex; align-items: center; justify-content: center; position: relative;
+  width: 38px; height: 38px; border: 0; border-radius: var(--radius); background: none; cursor: pointer; color: inherit;
+}
+.icon-btn:hover { background: rgba(255, 255, 255, .1); }
+
+.segmented { display: inline-flex; border: 1px solid var(--border-color); background: var(--surface); }
+.segmented button { border: 0; background: none; padding: 8px 14px; cursor: pointer; color: var(--muted); font-size: 12px; font-weight: 600; display: inline-flex; gap: 6px; align-items: center; }
+.segmented button + button { border-left: 1px solid var(--border-color); }
+.segmented button.is-active { background: var(--primary-color); color: var(--on-primary); }
+
+.tabs { display: flex; gap: 2px; border-bottom: 1px solid var(--border-color); margin-bottom: 18px; }
+.tabs button { border: 0; background: none; padding: 12px 16px; cursor: pointer; color: var(--muted); font-size: 13px; font-weight: 600; border-bottom: 2px solid transparent; margin-bottom: -1px; }
+.tabs button.is-active { color: var(--heading); border-bottom-color: var(--primary-color); }
+
+/* ---------- Form ---------- */
+.toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-bottom: 18px; }
+.toolbar .spacer { flex: 1; }
+.input, .select { padding: 9px 12px; border: 1px solid var(--border-color); border-radius: var(--radius); background: var(--surface); min-height: 40px; }
+.input:focus, .select:focus { outline: none; border-color: var(--primary-color); box-shadow: 0 0 0 3px var(--primary-light); }
+.input--search { min-width: 260px; }
+.field { display: flex; flex-direction: column; gap: 6px; }
+.field > span { font-size: 12px; font-weight: 600; color: var(--muted); }
+.field input, .field select, .field textarea { padding: 10px 12px; border: 1px solid var(--border-color); border-radius: var(--radius); background: var(--surface); min-height: 42px; }
+.field input:focus, .field select:focus, .field textarea:focus { outline: none; border-color: var(--primary-color); box-shadow: 0 0 0 3px var(--primary-light); }
+.field.is-invalid input, .field.is-invalid select { border-color: var(--danger); }
+.field__error { color: var(--danger); font-size: 12px; }
+.field--check { display: grid; grid-template-columns: auto 1fr; align-items: start; gap: 4px 10px; }
+.field--check input { margin: 3px 0 0; }
+.field--check .field__error { grid-column: 1 / -1; }
+.field--check > span, .field--check { text-transform: none; letter-spacing: 0; font-size: 13.5px; color: var(--text-color); font-weight: 500; }
+.form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px 16px; }
+.form-grid .full { grid-column: 1 / -1; }
+.form-section { grid-column: 1 / -1; margin: 8px 0 -4px; font: 500 16px/1.2 var(--font-display); color: var(--primary-dark); }
+
+/* ---------- Panel / bang ---------- */
+.panel { background: var(--surface); border: 1px solid var(--border-color); border-radius: var(--radius); box-shadow: var(--shadow); }
+.panel__head { display: flex; align-items: center; gap: 12px; padding: 18px 20px 0; }
+.panel__head h2 { font-size: 17px; }
+.panel__head .muted { font-size: 12px; }
+.panel__head > :last-child:not(:first-child) { margin-left: auto; }
+.panel__body { padding: 16px 20px 20px; }
+.grid { display: grid; gap: 20px; }
+.grid--2-1 { grid-template-columns: 2fr 1fr; }
+.grid--1-1 { grid-template-columns: 1fr 1fr; }
+.stack { display: flex; flex-direction: column; gap: 20px; }
+
+.table-wrap { overflow-x: auto; display: flex; flex-direction: column; align-items: center; width: 100%; }
+.table { width: max-content; min-width: min(100%, 760px); max-width: 100%; margin-inline: auto; border-collapse: collapse; }
+.table th, .table td { padding: 12px 14px; border-bottom: 1px solid #efe6d6; text-align: center; vertical-align: middle; }
+.table th { font-size: 12px; font-weight: 600; color: var(--muted); background: var(--surface-2); white-space: nowrap; }
+.table th.sortable { cursor: pointer; user-select: none; }
+.table th.sortable:hover, .table th.is-sorted { color: var(--primary-dark); }
+.table th .sort { opacity: .45; margin-left: 4px; }
+.table td .sub { text-align: center; }
+.table td .actions { justify-content: center; }
+.table th.is-sorted .sort { opacity: 1; }
+.table tbody tr:hover { background: #fbf6ec; }
+.table tbody tr:last-child td { border-bottom: 0; }
+.table .sub { display: block; color: var(--muted); font-size: 12px; }
+.table-empty { padding: 36px 16px; text-align: center; color: var(--muted); }
+.pager { display: flex; align-items: center; gap: 6px; padding: 12px 16px; border-top: 1px solid #efe6d6; font-size: 12.5px; color: var(--muted); }
+.pager .spacer { flex: 1; }
+.pager button { min-width: 32px; height: 30px; border: 1px solid var(--border-color); border-radius: var(--radius); background: var(--surface); cursor: pointer; }
+.pager button.is-active { background: var(--primary-color); border-color: var(--primary-color); color: var(--on-primary); }
+.pager button[disabled] { opacity: .4; cursor: default; }
+
+/* ---------- Nhan trang thai (in hoa) ---------- */
+.badge { display: inline-block; padding: 3px 9px; border-radius: var(--radius); font-size: 12px; font-weight: 600; white-space: nowrap; }
+.badge--ok { color: var(--ok); background: var(--ok-bg); }
+.badge--warn { color: var(--warn); background: var(--warn-bg); }
+.badge--info { color: var(--info); background: var(--info-bg); }
+.badge--danger { color: var(--danger); background: var(--danger-bg); }
+.badge--purple { color: var(--purple); background: var(--purple-bg); }
+.badge--neutral { color: var(--neutral); background: var(--neutral-bg); }
+.tag { display: inline-block; padding: 2px 8px; background: var(--primary-light); color: var(--primary-dark); font-size: 13px; font-weight: 600; border-radius: var(--radius); }
+
+/* ---------- Thanh "Kiem tra phong trong" (kieu Flawless / Xenia) ---------- */
+.check-bar { display: grid; grid-template-columns: 220px repeat(4, minmax(0, 1fr)) 170px; background: var(--checkbar); color: #e9e4dc; box-shadow: var(--shadow-pop); }
+.check-bar__label { display: flex; align-items: center; padding: 18px 26px; background: var(--gold); color: #fff; font: 500 21px/1.15 var(--font-display); }
+.check-bar label { display: flex; flex-direction: column; justify-content: center; gap: 6px; padding: 14px 16px; }
+.check-bar label span { font-size: 12px; color: #a9a196; }
+.check-bar input, .check-bar select { width: 100%; padding: 9px 10px; border: 1px solid #3c3843; border-radius: var(--radius); background: #2f2b35; color: #fff; color-scheme: dark; min-height: 40px; }
+.check-bar input:focus, .check-bar select:focus { outline: none; border-color: var(--gold); }
+.check-bar button { margin: 14px 16px 14px 0; align-self: end; min-height: 40px; }
+
+/* ---------- The phong (kieu Eagle: anh tren, than trang, gia ben phai) ---------- */
+.room-band { position: relative; padding: 4px 0 34px; background: linear-gradient(to bottom, transparent 0, transparent 46%, var(--band) 46%, var(--band) 100%); }
+.room-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 22px; }
+.room-card { display: flex; flex-direction: column; background: var(--surface); box-shadow: 0 6px 22px rgba(30, 40, 50, .14); }
+.room-card__img { position: relative; aspect-ratio: 4 / 2.9; background-color: #b69a7c; background-size: cover; background-position: center; }
+.room-card__img .badge { position: absolute; left: 12px; top: 12px; box-shadow: 0 2px 6px rgba(0, 0, 0, .15); }
+.room-card__body { padding: 18px 18px 16px; display: flex; flex-direction: column; flex: 1; }
+.room-card__title { font-size: 19px; color: var(--band); }
+.room-card__desc { margin: 6px 0 12px; color: var(--muted); font-size: 12.5px; line-height: 1.55; }
+.room-card__specs { list-style: none; margin: 0 0 14px; padding: 0; display: flex; flex-direction: column; gap: 6px; font-size: 12.5px; color: #4c545c; }
+.room-card__specs li { display: flex; gap: 8px; align-items: center; }
+.room-card__specs .svg-ic { width: 15px; height: 15px; color: var(--accent-soft); }
+.room-card__foot { display: flex; align-items: center; gap: 8px; margin-top: auto; }
+.room-card__price { margin-left: auto; font-size: 13px; color: #4c545c; white-space: nowrap; }
+.room-card__price b { font-size: 15px; color: var(--heading); }
+
+/* ---------- Modal ---------- */
+.modal { position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; padding: 20px; }
+.modal__backdrop { position: absolute; inset: 0; background: rgba(30, 36, 42, .55); }
+.modal__dialog { position: relative; width: min(560px, 100%); max-height: calc(100vh - 40px); display: flex; flex-direction: column; background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow-pop); border-top: 3px solid var(--primary-color); animation: pop .16s ease-out; }
+.modal--lg .modal__dialog { width: min(840px, 100%); }
+.modal--xl .modal__dialog { width: min(1100px, 100%); }
+.modal__header { display: flex; align-items: center; gap: 12px; padding: 18px 24px; border-bottom: 1px solid var(--border-color); }
+.modal__header h2 { font-size: 21px; }
+.modal__header .icon-btn { margin-left: auto; color: var(--muted); }
+.modal__header .icon-btn:hover { background: var(--surface-2); }
+.modal__body { padding: 20px 24px; overflow: auto; }
+.modal__footer { display: flex; justify-content: flex-end; gap: 10px; padding: 14px 24px; border-top: 1px solid var(--border-color); background: var(--surface-2); }
+.modal__footer:empty { display: none; }
+@keyframes pop { from { transform: translateY(8px); opacity: 0; } to { transform: none; opacity: 1; } }
+
+/* ---------- Toast ---------- */
+.toasts { position: fixed; right: 20px; bottom: 20px; z-index: 200; display: flex; flex-direction: column; gap: 10px; }
+.toast { width: min(360px, calc(100vw - 40px)); padding: 12px 16px; background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow-pop); border-left: 4px solid var(--ok); animation: pop .18s ease-out; }
+.toast--error { border-left-color: var(--danger); }
+.toast--info { border-left-color: var(--info); }
+.toast b { display: block; font-size: 12px; }
+.toast p { margin: 2px 0 0; color: var(--muted); font-size: 13px; white-space: pre-line; }
+
+/* ---------- Chi tiet & hoa don ---------- */
+.detail-list { display: grid; grid-template-columns: 150px 1fr; gap: 8px 16px; margin: 0; }
+.detail-list dt { color: var(--muted); font-size: 12.5px; }
+.detail-list dd { margin: 0; font-weight: 500; }
+.section-title { font: 500 16px/1.2 var(--font-display); margin: 22px 0 10px; }
+.loading, .empty-state { padding: 40px; text-align: center; color: var(--muted); }
+.invoice { border: 1px solid var(--border-color); }
+.invoice__head { display: flex; justify-content: space-between; gap: 16px; padding: 16px 18px; background: var(--surface-2); border-bottom: 1px solid var(--border-color); }
+.invoice__head h3 { font-size: 21px; }
+.invoice__block { padding: 14px 18px; border-bottom: 1px solid var(--border-color); }
+.invoice__line { display: flex; justify-content: space-between; gap: 12px; padding: 3px 0; }
+.invoice__line--big { font-size: 15px; font-weight: 600; }
+.invoice__line--sub { color: var(--muted); font-size: 12.5px; padding-left: 14px; }
+.invoice__total { display: flex; justify-content: space-between; padding: 14px 18px; background: var(--primary-light); color: var(--primary-dark); font-size: 18px; font-weight: 700; }
+.chip-room { color: var(--band); }
+.chip-service { color: #b9527a; }
+.trend-up { color: var(--ok); font-weight: 600; }
+.trend-down { color: var(--danger); font-weight: 600; }
+
+/* ---------- Than thien hon: bo goc theo cap bac (the 12px, nut/o nhap 8px, nhan tron) ---------- */
+.btn, .input, .select, .field input, .field select, .field textarea, .segmented, .pager button,
+.check-bar input, .check-bar select { border-radius: var(--radius-sm); }
+.segmented { overflow: hidden; }
+.btn { font-weight: 600; font-size: 13.5px; letter-spacing: .01em; }
+.btn--sm { font-size: 12.5px; }
+.btn--gold:hover { background: var(--gold-dark); border-color: var(--gold-dark); }
+.badge { border-radius: 999px; padding: 3px 10px; font-weight: 600; }
+.tag { border-radius: 999px; }
+.panel, .room-card, .modal__dialog, .toast, .invoice, .check-bar { border-radius: var(--radius); overflow: hidden; }
+.modal__dialog { border-top: 0; }
+.modal__header { border-top: 4px solid var(--primary-color); }
+.check-bar__label { border-radius: var(--radius) 0 0 var(--radius); }
+.room-card { box-shadow: 0 8px 28px rgba(30, 40, 50, .14); }
+.field > span { color: #4c545c; font-weight: 500; }
+.table th { font-weight: 600; color: #5d666e; }
+.stat { border-radius: var(--radius); }
+.progress__track, .progress__fill, .bar-row__track, .bar-row__fill { border-radius: 999px; }
+.g-svc, .g-branch, .g-intro__img, .g-success__code, .login__form { border-radius: var(--radius); overflow: hidden; }
+.g-svc__img h3 { border-top-right-radius: var(--radius-sm); }
+.room-pick label, .svc-row, .g-svc-pick label, .suggest, .dropdown__menu { border-radius: var(--radius-sm); }
+.dropdown__menu { overflow: hidden; }
+.field input[type="checkbox"] { width: 18px; height: 18px; min-height: 0; padding: 0; border: 0; box-shadow: none; accent-color: var(--primary-color); }
+
+/* ---------- Danh sách nhân viên (Admin + User) ---------- */
+.page--staff {
+  max-width: 1200px;
+  margin-inline: auto;
+  width: 100%;
+}
+.toolbar--staff {
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.toolbar--staff .st-scope {
+  font-size: 13.5px;
+  align-self: center;
+}
+.panel--staff-table {
+  width: 100%;
+  overflow: hidden;
+}
+.panel__head--staff {
+  padding: 18px 22px 8px;
+  border-bottom: 1px solid #edf1f4;
+}
+.panel__head--staff h2 {
+  margin: 0 0 2px;
+  font-size: 18px;
+  color: var(--primary-dark, #0e3557);
+}
+.panel__body--table {
+  padding: 0 8px 12px;
+}
+.panel--staff-table .table-wrap {
+  width: 100%;
+  display: block;
+  overflow-x: auto;
+}
+.panel--staff-table .table {
+  width: 100%;
+  min-width: 720px;
+  max-width: none;
+  margin: 0;
+  table-layout: fixed;
+}
+.panel--staff-table .table th,
+.panel--staff-table .table td {
+  padding: 14px 16px;
+  text-align: left;
+  vertical-align: middle;
+  border-bottom: 1px solid #e8eef3;
+  white-space: nowrap;
+}
+.panel--staff-table .table td:not(:last-child) {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.panel--staff-table .table td:last-child {
+  overflow: visible;
+}
+.panel--staff-table .table th {
+  background: #eef4f8;
+  color: #1e3a4c;
+  font-size: 12.5px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: none;
+}
+.panel--staff-table .table th.num,
+.panel--staff-table .table td.num {
+  text-align: right;
+}
+.panel--staff-table .table tbody tr:hover {
+  background: #f5fafc;
+}
+.panel--staff-table .table col,
+.panel--staff-table .table th:nth-child(1),
+.panel--staff-table .table td:nth-child(1) { width: 12%; }
+.panel--staff-table .table th:nth-child(2),
+.panel--staff-table .table td:nth-child(2) { width: 26%; }
+.panel--staff-table .table th:nth-child(3),
+.panel--staff-table .table td:nth-child(3) { width: 18%; }
+.panel--staff-table .table th:nth-child(4),
+.panel--staff-table .table td:nth-child(4) { width: 18%; }
+.panel--staff-table .table th:nth-child(5),
+.panel--staff-table .table td:nth-child(5) { width: 26%; }
+
+.st-ma { color: #0e3557; font-weight: 700; letter-spacing: 0.02em; }
+.st-name { font-weight: 500; color: #243447; }
+.st-role { color: #3d5a6c; }
+.st-salary { font-variant-numeric: tabular-nums; color: #9a7224; font-weight: 600; }
+
+.actions--staff {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  flex-wrap: nowrap;
+  min-height: 34px;
+}
+.btn-icon {
+  display: inline-grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border-radius: 999px;
+  border: 1px solid #d5dee6;
+  background: #fff;
+  color: #3d5a6c;
+  cursor: pointer;
+  transition: background .15s ease, border-color .15s ease, color .15s ease, box-shadow .15s ease;
+}
+.btn-icon:hover {
+  background: #eef6fb;
+  border-color: #9bb8c9;
+  color: #0e3557;
+  box-shadow: 0 2px 8px rgba(14, 53, 87, .1);
+}
+.btn-icon .svg-ic { width: 16px; height: 16px; }
+.btn--outline-danger {
+  background: transparent;
+  border: 1px solid #e8a0a0;
+  color: #b42318;
+  border-radius: 999px;
+  padding: 6px 12px;
+  min-height: 34px;
+  font-size: 12.5px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.btn--outline-danger:hover {
+  background: #fdeaea;
+  border-color: #d4544a;
+  color: #912018;
+}
+
+@media (max-width: 900px) {
+  .panel--staff-table .table {
+    min-width: 640px;
+  }
+  .toolbar--staff .select,
+  .toolbar--staff .input--search {
+    min-width: 0;
+    flex: 1 1 140px;
+  }
+}

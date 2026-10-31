@@ -1,0 +1,76 @@
+/* =====================================================================
+   responsive.css - Trang quan tri: sidebar thu gon/mo rong (may tinh), truot tu trai bang hamburger (dien thoai)
+   The so lieu & the phong: 4 cot -> 2 cot -> 1 cot. Bang cuon ngang.
+   The so lieu & the phong: 4 cot -> 2 cot -> 1 cot. Bang cuon ngang.
+   ===================================================================== */
+
+@media (max-width: 1280px) {
+  .booking { grid-template-columns: 1fr; }
+  .booking__summary { position: static; }
+  .check-bar { grid-template-columns: repeat(4, minmax(0, 1fr)) 150px; }
+  .check-bar__label { display: none; }
+}
+
+/* Tablet: sidebar tu thu gon thanh cot icon */
+@media (max-width: 1100px) {
+  .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .room-band--admin .room-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .grid--2-1, .grid--1-1 { grid-template-columns: 1fr; }
+  .a-link, .user-chip__text { display: none; }
+  .login { grid-template-columns: 1fr; }
+  .login__visual { min-height: 300px; padding: 28px; }
+}
+
+/* Dien thoai / tablet nho: sidebar an, mo bang hamburger (truot tu trai, nen mo phia sau) */
+@media (max-width: 900px) {
+  .main, .app.is-collapsed .main { margin-left: 0; }
+  .sidebar, .app.is-collapsed .sidebar { width: min(290px, 86vw); transform: translateX(-102%); }
+  .app.is-menu-open .sidebar { transform: none; }
+  .app.is-collapsed .a-brand span, .app.is-collapsed .nav-item span { display: inline; }
+  .app.is-collapsed .nav-item { justify-content: flex-start; padding: 0 12px; }
+  .app.is-collapsed .nav-group__title { height: auto; margin: 0; padding: 0 10px 6px; background: none; font-size: 11px; }
+  .app.is-collapsed .sidebar__brand { flex-direction: row; justify-content: space-between; padding: 0 14px 0 18px; height: 68px; }
+  .sidebar__collapse { display: none; }
+  .sidebar__backdrop { position: fixed; inset: 0; z-index: 55; background: rgba(30, 20, 10, .5); }
+  .app.is-menu-open .sidebar__backdrop { display: block; }
+  .a-burger { display: inline-flex; }
+  .a-header__row { padding: 0 16px; gap: 10px; height: 58px; }
+}
+
+@media (max-width: 720px) {
+  .a-container { padding: 0 16px; }
+  .a-search { display: none; }
+  .a-header__actions { margin-left: auto; }
+  .a-cta { padding: 6px 10px; min-height: 32px; font-size: 11.5px; margin-left: 2px; }
+  .a-banner .a-container { padding-top: 22px; padding-bottom: 22px; }
+  .a-banner h1 { font-size: 24px; }
+  .content { padding-top: 18px; }
+  .stats { grid-template-columns: 1fr; gap: 12px; }
+  .room-band--admin { margin: 0 -16px; padding-left: 16px; padding-right: 16px; }
+  .room-band--admin .room-grid { grid-template-columns: 1fr; }
+  .check-bar { grid-template-columns: 1fr 1fr; }
+  .check-bar button { grid-column: 1 / -1; margin: 0 16px 16px; }
+  .form-grid { grid-template-columns: 1fr; }
+  .toolbar > * { flex: 1 1 100%; }
+  .toolbar .spacer { display: none; }
+  .input--search { min-width: 0; }
+  .donut-wrap { grid-template-columns: 1fr; }
+  .detail-list { grid-template-columns: 1fr; gap: 2px; }
+  .detail-list dd { margin-bottom: 8px; }
+  .bar-row { grid-template-columns: 100px 1fr 90px; }
+  .dropdown__menu--wide { width: min(330px, calc(100vw - 24px)); right: -60px; }
+  .modal { padding: 0; align-items: end; }
+  .modal__dialog { max-height: 94vh; }
+  .login__visual { min-height: 220px; }
+  .login__caption h1 { font-size: 30px; }
+}
+
+@media (max-width: 420px) {
+  .check-bar { grid-template-columns: 1fr; }
+  #user-menu { display: none; }
+  .a-header__actions { gap: 2px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}

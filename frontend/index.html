@@ -1,0 +1,322 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ocean Pearl Resort</title>
+  <meta name="description" content="Các bước đặt phòng trực tuyến tại Ocean Pearl Resort – nghỉ dưỡng cao cấp bên bờ biển.">
+  <link rel="icon" href="assets/icons/logo-oceanpearl.svg" type="image/svg+xml">
+  <!-- Playfair Display (tieu de serif) + Be Vietnam Pro (noi dung, tieng Viet) + Dancing Script (dong chu viet tay). Offline van chay voi font he thong. -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Playfair+Display:wght@400;500;600&family=Dancing+Script:wght@500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/guest.css">
+  <link rel="stylesheet" href="css/oceanpearl.css">
+</head>
+<body class="guest" data-theme="dashboard">
+
+  <!-- Thong tin lien he (an tren giao dien Ocean Pearl Resort; guest.js van dien hotline vao day) -->
+  <div class="g-topbar" hidden>
+    <div class="container g-topbar__inner">
+      <span data-ic="pin" id="g-address"></span>
+      <a data-ic="phone" id="g-hotline" href="#"></a>
+    </div>
+  </div>
+
+  <!-- ===== Header: logo trai, menu ngang, nut "Dat phong" ben phai ===== -->
+  <header class="g-header" id="g-header">
+    <div class="container g-header__inner">
+      <a class="g-brand" href="#top" aria-label="Ocean Pearl Resort – Trang chủ">
+        <img src="assets/icons/logo-oceanpearl.svg" alt="" width="62" height="50">
+        <span><b>Ocean Pearl</b><small>Resort</small></span>
+      </a>
+      <nav class="g-nav" id="g-nav" aria-label="Menu chính">
+        <a href="#top" class="is-active">Trang chủ</a>
+        <a href="#categories">Danh mục</a>
+        <a href="#offers">Ưu đãi</a>
+        <a href="#rooms">Phòng &amp; Suite</a>
+        <a href="#services">Dịch vụ</a>
+        <a href="#tra-cuu">Tra cứu hóa đơn</a>
+        <a href="#branches">Chi nhánh</a>
+        <a href="#contact">Liên hệ</a>
+        <a href="admin.html">Trang quản trị</a>
+      </nav>
+      <a class="btn btn--gold g-header__cta" href="#dat-phong" id="g-cta"><span data-icon="calendarCheck"></span>Đặt phòng</a>
+      <button class="icon-btn g-burger" id="g-burger" type="button" aria-label="Mở menu" aria-expanded="false" aria-controls="g-nav"></button>
+    </div>
+  </header>
+
+  <main id="top">
+    <!-- ===== Hero: anh bien lon, overlay nhe, tieu de + CTA ===== -->
+    <section class="g-hero">
+      <div class="g-hero__bg" aria-hidden="true"></div>
+      <div class="g-hero__deco" aria-hidden="true">More than<small>a Stay</small></div>
+      <div class="container g-hero__content">
+        <p class="g-hero__script">Trọn vẹn trải nghiệm</p>
+        <h1>Nghỉ dưỡng theo cách của riêng bạn</h1>
+        <p class="g-hero__lead">Khám phá không gian nghỉ dưỡng cao cấp tại Ocean Pearl Resort – phòng hướng biển, villa hồ bơi riêng và dịch vụ tận tâm.</p>
+        <div class="g-hero__actions">
+          <a class="btn btn--gold" href="#dat-phong">Đặt phòng ngay</a>
+          <a class="btn btn--ghost-light" href="#rooms">Khám phá phòng &amp; suite</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Thanh tim phong ===== -->
+    <section class="container g-check" id="check" aria-label="Bước 1: Kiểm tra phòng trống">
+      <div class="g-cn-bar" id="g-cn-bar">
+        <span class="g-cn-bar__label">Chi nhánh:</span>
+        <div class="g-cn-pills" id="g-cn-pills" role="group" aria-label="Chọn chi nhánh"></div>
+      </div>
+      <form class="check-bar check-bar--pills" id="g-check-form" novalidate>
+        <div class="check-bar__label">Kiểm tra phòng trống</div>
+        <input type="hidden" name="maCN" id="g-cn" value="">
+        <label class="check-bar__field"><span>Ngày nhận</span><input type="date" name="ngayNhan" required></label>
+        <label class="check-bar__field"><span>Ngày trả</span><input type="date" name="ngayTra" required></label>
+        <label class="check-bar__field"><span>Số khách</span><select name="soNguoi"><option>1</option><option selected>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option><option>11</option><option>12</option><option>13</option><option>14</option><option>15</option><option>16</option><option>17</option><option>18</option><option>19</option><option>20</option></select></label>
+        <button class="btn btn--primary check-bar__submit" type="submit">Tìm phòng</button>
+      </form>
+    </section>
+
+
+    <!-- ===== Danh muc nhanh ===== -->
+    <section class="g-section g-cats" id="categories" aria-label="Danh mục">
+      <div class="container">
+        <div class="g-panel-head">
+          <p class="bl-kicker">Khám phá</p>
+          <h2>Danh mục dành cho bạn</h2>
+        </div>
+        <div class="g-cat-grid">
+          <a class="g-cat" href="#rooms">
+            <span class="g-cat__img" style="background-image:url('assets/images/room-deluxe.jpg')"></span>
+            <span class="g-cat__body">
+              <span class="g-cat__title">Phòng &amp; Suite</span>
+              <span class="g-cat__desc">Không gian nghỉ dưỡng đẳng cấp</span>
+              <span class="g-cat__link">Khám phá phòng</span>
+            </span>
+          </a>
+          <a class="g-cat" href="#services">
+            <span class="g-cat__img" style="background-image:url('assets/images/dv-diving.jpg')"></span>
+            <span class="g-cat__body">
+              <span class="g-cat__title">Dịch vụ</span>
+              <span class="g-cat__desc">Ẩm thực, spa và trải nghiệm biển</span>
+              <span class="g-cat__link">Khám phá dịch vụ</span>
+            </span>
+          </a>
+          <a class="g-cat" href="#offers">
+            <span class="g-cat__img" style="background-image:url('assets/images/banner-new.jpg')"></span>
+            <span class="g-cat__body">
+              <span class="g-cat__title">Ưu đãi</span>
+              <span class="g-cat__desc">Gói nghỉ dưỡng hấp dẫn</span>
+              <span class="g-cat__link">Xem ưu đãi</span>
+            </span>
+          </a>
+          <a class="g-cat" href="#dat-phong">
+            <span class="g-cat__img" style="background-image:url('assets/images/room-villa.jpg')"></span>
+            <span class="g-cat__body">
+              <span class="g-cat__title">Đặt phòng</span>
+              <span class="g-cat__desc">Tìm và đặt phòng phù hợp</span>
+              <span class="g-cat__link">Đặt phòng ngay</span>
+            </span>
+          </a>
+          <a class="g-cat" href="#tra-cuu">
+            <span class="g-cat__img" style="background-image:url('assets/images/dv-thanhtoan.jpg');background-position:center center;background-size:cover;background-repeat:no-repeat"></span>
+            <span class="g-cat__body">
+              <span class="g-cat__title">Hóa đơn &amp; Thanh toán</span>
+              <span class="g-cat__desc">Tra cứu hóa đơn, thanh toán</span>
+              <span class="g-cat__link">Tra cứu</span>
+            </span>
+          </a>
+          <a class="g-cat" href="#branches">
+            <span class="g-cat__img" style="background-image:url('assets/images/hero-beach.jpg')"></span>
+            <span class="g-cat__body">
+              <span class="g-cat__title">Chi nhánh</span>
+              <span class="g-cat__desc">Các điểm nghỉ dưỡng của chúng tôi</span>
+              <span class="g-cat__link">Xem chi nhánh</span>
+            </span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Uu dai ===== -->
+    <section class="g-section g-offers" id="offers" aria-label="Chương trình ưu đãi">
+      <div class="container">
+        <div class="g-panel-head g-panel-head--wide">
+          <p class="bl-kicker">Ưu đãi đang áp dụng</p>
+          <h2>Chương trình nghỉ dưỡng</h2>
+          <p>Ở từ 7 đêm giảm 10% tiền phòng; hạng thành viên được giảm trên hóa đơn; giá theo mùa minh bạch.</p>
+        </div>
+        <div class="g-offer-grid">
+          <article class="g-offer"><div class="g-offer__badge">Dài ngày</div><h3 class="g-offer__title">Ở từ 7 đêm – giảm 10%</h3><p>Tự động trừ trên tiền phòng khi đặt từ 7 đêm trở lên.</p><a class="g-offer__link" href="#dat-phong">Đặt ngay →</a></article>
+          <article class="g-offer g-offer--gold"><div class="g-offer__badge">Thành viên</div><h3 class="g-offer__title">Bạc · Vàng · Kim cương</h3><p>Tích 1 điểm cho mỗi 100.000đ. Giảm 5% / 10% / 15% trên hóa đơn.</p><a class="g-offer__link" href="#tra-cuu">Xem hóa đơn của bạn →</a></article>
+          <article class="g-offer"><div class="g-offer__badge">Combo</div><h3 class="g-offer__title">Phòng + Spa / Tour</h3><p>Chọn dịch vụ khi đặt online; tính vào hóa đơn khi trả phòng.</p><a class="g-offer__link" href="#services">Xem dịch vụ →</a></article>
+          <article class="g-offer"><div class="g-offer__badge">Thấp điểm</div><h3 class="g-offer__title">Tháng 9 – 11</h3><p>Hệ số mùa thấp điểm giúp giá mềm hơn so với hè và lễ Tết.</p><a class="g-offer__link" href="#dat-phong">Chọn ngày →</a></article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Dat phong (anchor for CTA links) ===== -->
+    <section class="g-section g-book-zone" id="dat-phong" aria-label="Đặt phòng trực tuyến" style="padding: 24px 0 0; min-height: 0;">
+      <div class="container"></div>
+    </section>
+
+    <!-- ===== Ket qua tim phong (buoc 2) ===== -->
+    <section class="g-section g-results" id="results" hidden>
+      <div class="container">
+        <div class="bl-head">
+          <div>
+            <p class="bl-kicker">Bước 2</p>
+            <h2>Phòng còn trống</h2>
+            <p id="g-result-sub"></p>
+          </div>
+          <div class="segmented" id="g-type-filter" role="group" aria-label="Lọc loại phòng"></div>
+        </div>
+        <div class="bl-grid" id="g-result-list"></div>
+      </div>
+    </section>
+
+    <!-- ===== Phong & Suite ===== -->
+    <section class="g-section g-rooms" id="rooms">
+      <div class="container">
+        <div class="bl-head">
+          <div class="g-copy-card">
+            <p class="bl-kicker">Không gian nghỉ dưỡng</p>
+            <h2>Phòng &amp; Suite</h2>
+            <p>Giá tham khảo một đêm mùa bình thường, chưa gồm VAT.</p>
+          </div>
+          <div class="bl-head__deco" aria-hidden="true">Sleep by<small>the sea</small></div>
+        </div>
+        <div class="room-band"><div class="bl-grid" id="g-room-types"><div class="loading">Đang tải…</div></div></div>
+      </div>
+    </section>
+
+    <!-- ===== Danh sách phòng theo loại (sau khi chọn Standard/Deluxe/Suite/Villa) ===== -->
+    <section class="g-section g-room-list" id="room-list" hidden>
+      <div class="container">
+        <div class="bl-head">
+          <div class="g-copy-card">
+            <p class="bl-kicker">Lựa chọn phòng</p>
+            <h2 id="g-room-list-title">DANH SÁCH PHÒNG</h2>
+            <p id="g-room-list-desc">Khám phá và lựa chọn căn phòng phù hợp với kỳ nghỉ của bạn.</p>
+          </div>
+          <button type="button" class="btn btn--ghost" id="g-room-list-back">← Quay lại loại phòng</button>
+        </div>
+        <div class="g-room-list__meta" id="g-room-list-meta"></div>
+        <div class="g-room-list__tabs segmented" id="g-room-list-tabs" role="tablist" aria-label="Chi nhánh"></div>
+        <div class="bl-grid" id="g-room-list-grid"><div class="loading">Đang tải danh sách phòng…</div></div>
+      </div>
+    </section>
+
+    <!-- ===== Dich vu trong ky nghi (theo anh mau) ===== -->
+    <section class="g-section g-services bl-sea" id="services">
+      <div class="container">
+        <div class="bl-head">
+          <div class="g-copy-card">
+            <p class="bl-kicker">Trọn vẹn trải nghiệm</p>
+            <h2>Dịch vụ trong kỳ nghỉ</h2>
+            <p>Tận hưởng những tiện ích và dịch vụ cao cấp được thiết kế riêng để mang đến cho bạn một kỳ nghỉ trọn vẹn và đáng nhớ.</p>
+          </div>
+          <div class="bl-head__deco" aria-hidden="true">More than<small>a Stay</small></div>
+        </div>
+        <div class="bl-grid" id="g-services"></div>
+      </div>
+    </section>
+
+    <!-- ===== Gioi thieu ===== -->
+    <section class="g-section g-intro">
+      <div class="container g-intro__grid">
+        <div class="g-intro__img" aria-hidden="true"></div>
+        <div class="g-copy-card g-intro__copy">
+          <p class="bl-kicker">Chào mừng đến Ocean Pearl Resort</p>
+          <h2>Nghỉ dưỡng để sống chậm hơn</h2>
+          <p>Phòng hướng biển chỉ cách bãi tắm vài bước chân, villa sân vườn có hồ bơi riêng cho cả gia đình, và đội ngũ luôn sẵn sàng phục vụ.</p>
+          <p class="muted">Đặt phòng trực tuyến được giữ phòng ngay lập tức. Lễ tân sẽ gọi xác nhận và quý khách thanh toán khi trả phòng.</p>
+          <ul class="g-points" id="g-points"></ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Tra cuu phieu / hoa don ===== -->
+    <section class="g-section g-lookup" id="tra-cuu" aria-label="Tra cứu hóa đơn">
+      <div class="container">
+        <div class="g-lookup__panel">
+          <div class="bl-head">
+            <div class="g-copy-card g-lookup__copy">
+              <p class="bl-kicker">Hỗ trợ khách</p>
+              <h2>Tra cứu phiếu &amp; hóa đơn</h2>
+              <p>Nhập mã phiếu hoặc mã hóa đơn cùng số điện thoại đã đặt để tra cứu.</p>
+            </div>
+          </div>
+          <form class="g-lookup__form" id="g-lookup-form" novalidate>
+          <label class="field"><span>Mã phiếu / hóa đơn</span><input name="ma" required autocomplete="off"></label>
+          <label class="field"><span>Số điện thoại</span><input name="sdt" inputmode="tel" required autocomplete="tel"></label>
+            <button class="btn btn--primary" type="submit">Tra cứu hóa đơn</button>
+          </form>
+          <div class="g-lookup__result" id="g-lookup-result" hidden></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Chi nhanh ===== -->
+    <section class="g-section g-branches" id="branches">
+      <div class="container">
+        <div class="bl-head">
+          <div>
+            <p class="bl-kicker">Hệ thống resort</p>
+            <h2>Chi nhánh Ocean Pearl Resort</h2>
+          </div>
+        </div>
+        <div class="g-branch-grid" id="g-branches"></div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ===== Chan trang ===== -->
+  <footer class="g-footer" id="contact">
+    <div class="container g-footer__grid">
+      <div>
+        <a class="g-brand" href="#top"><img src="assets/icons/logo-oceanpearl.svg" alt="" width="62" height="50"><span><b>Ocean Pearl</b><small>Resort</small></span></a>
+        <p class="g-footer__slogan">Nghỉ dưỡng để sống chậm hơn</p>
+        <p class="g-footer__note">Các bước đặt phòng trực tuyến được hệ thống kiểm tra trùng lịch ngay khi gửi.</p>
+      </div>
+      <div id="g-footer-branches"></div>
+      <div>
+        <h3>Liên kết</h3>
+        <ul class="g-footer__links">
+          <li><a href="#categories">Danh mục</a></li>
+          <li><a href="#offers">Ưu đãi</a></li>
+          <li><a href="#rooms">Phòng &amp; Suite</a></li>
+          <li><a href="#tra-cuu">Tra cứu hóa đơn</a></li>
+          <li><a href="#dat-phong">Các bước đặt phòng trực tuyến</a></li>
+          <li><a href="admin.html">Đăng nhập quản trị</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="g-footer__bottom container">© <span id="g-year"></span> Ocean Pearl Resort – Chạm vào vẻ đẹp đại dương, tận hưởng kỳ nghỉ trọn vẹn.</div>
+  </footer>
+
+  <a class="g-sticky-cta" href="#dat-phong" id="g-sticky-cta">Đặt phòng</a>
+  <a class="g-totop" href="#top" aria-label="Lên đầu trang" id="g-totop"></a>
+
+  <!-- Modal & toast dung chung (style.css) -->
+  <div class="modal" id="modal" hidden>
+    <div class="modal__backdrop" data-close></div>
+    <div class="modal__dialog" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+      <header class="modal__header">
+        <h2 id="modal-title"></h2>
+        <button class="icon-btn" type="button" data-close aria-label="Đóng"></button>
+      </header>
+      <div class="modal__body" id="modal-body"></div>
+      <footer class="modal__footer" id="modal-footer"></footer>
+    </div>
+  </div>
+  <div class="toasts" id="toasts" aria-live="polite"></div>
+
+  <script src="js/core.js"></script>
+  <script src="js/datefield.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/guest.js"></script>
+</body>
+</html>

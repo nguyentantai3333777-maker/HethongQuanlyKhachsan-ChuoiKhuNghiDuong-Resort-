@@ -1,0 +1,106 @@
+# Project: Project3
+# Makefile created by Dev-C++ 5.11
+
+CPP      = g++.exe
+CC       = gcc.exe
+WINDRES  = windres.exe
+OBJ      = main.o assets/main.o ../backend/ChiNhanhResort.o ../backend/ChuongTrinh.o ../backend/ConsoleUI.o ../backend/DichVu.o ../backend/HoaDon.o ../backend/HttpServer.o ../backend/InputHelper.o ../backend/LuuTruFile.o ../backend/main.o ../backend/MenuDatPhong.o ../backend/MenuDichVu.o ../backend/MenuKhachHang.o ../backend/MenuPhong.o ../backend/MenuThanhToan.o ../backend/MenuThongKe.o ../backend/Nguoi.o ../backend/PhieuDatPhong.o ../backend/Phong.o ../backend/PhongCuThe.o ../backend/QuanLyKhachSan.o ../backend/TaiKhoan.o ../backend/TienIch.o ../backend/TrangThaiCuThe.o ../backend/WebApi.o ../backend/WebServer.o
+LINKOBJ  = main.o assets/main.o ../backend/ChiNhanhResort.o ../backend/ChuongTrinh.o ../backend/ConsoleUI.o ../backend/DichVu.o ../backend/HoaDon.o ../backend/HttpServer.o ../backend/InputHelper.o ../backend/LuuTruFile.o ../backend/main.o ../backend/MenuDatPhong.o ../backend/MenuDichVu.o ../backend/MenuKhachHang.o ../backend/MenuPhong.o ../backend/MenuThanhToan.o ../backend/MenuThongKe.o ../backend/Nguoi.o ../backend/PhieuDatPhong.o ../backend/Phong.o ../backend/PhongCuThe.o ../backend/QuanLyKhachSan.o ../backend/TaiKhoan.o ../backend/TienIch.o ../backend/TrangThaiCuThe.o ../backend/WebApi.o ../backend/WebServer.o
+LIBS     = -L"D:/New folder/Dev-Cpp/MinGW64/lib" -L"D:/New folder/Dev-Cpp/MinGW64/x86_64-w64-mingw32/lib" -static-libgcc
+INCS     = -I"D:/New folder/Dev-Cpp/MinGW64/include" -I"D:/New folder/Dev-Cpp/MinGW64/x86_64-w64-mingw32/include" -I"D:/New folder/Dev-Cpp/MinGW64/lib/gcc/x86_64-w64-mingw32/4.9.2/include"
+CXXINCS  = -I"D:/New folder/Dev-Cpp/MinGW64/include" -I"D:/New folder/Dev-Cpp/MinGW64/x86_64-w64-mingw32/include" -I"D:/New folder/Dev-Cpp/MinGW64/lib/gcc/x86_64-w64-mingw32/4.9.2/include" -I"D:/New folder/Dev-Cpp/MinGW64/lib/gcc/x86_64-w64-mingw32/4.9.2/include/c++"
+BIN      = Project3.exe
+CXXFLAGS = $(CXXINCS) -std=c++17
+CFLAGS   = $(INCS) -std=c++17
+RM       = rm.exe -f
+
+.PHONY: all all-before all-after clean clean-custom
+
+all: all-before $(BIN) all-after
+
+clean: clean-custom
+	${RM} $(OBJ) $(BIN)
+
+$(BIN): $(OBJ)
+	$(CPP) $(LINKOBJ) -o $(BIN) $(LIBS)
+
+main.o: main.cpp
+	$(CPP) -c main.cpp -o main.o $(CXXFLAGS)
+
+assets/main.o: assets/main.cpp
+	$(CPP) -c assets/main.cpp -o assets/main.o $(CXXFLAGS)
+
+../backend/ChiNhanhResort.o: ../backend/ChiNhanhResort.cpp
+	$(CPP) -c ../backend/ChiNhanhResort.cpp -o ../backend/ChiNhanhResort.o $(CXXFLAGS)
+
+../backend/ChuongTrinh.o: ../backend/ChuongTrinh.cpp
+	$(CPP) -c ../backend/ChuongTrinh.cpp -o ../backend/ChuongTrinh.o $(CXXFLAGS)
+
+../backend/ConsoleUI.o: ../backend/ConsoleUI.cpp
+	$(CPP) -c ../backend/ConsoleUI.cpp -o ../backend/ConsoleUI.o $(CXXFLAGS)
+
+../backend/DichVu.o: ../backend/DichVu.cpp
+	$(CPP) -c ../backend/DichVu.cpp -o ../backend/DichVu.o $(CXXFLAGS)
+
+../backend/HoaDon.o: ../backend/HoaDon.cpp
+	$(CPP) -c ../backend/HoaDon.cpp -o ../backend/HoaDon.o $(CXXFLAGS)
+
+../backend/HttpServer.o: ../backend/HttpServer.cpp
+	$(CPP) -c ../backend/HttpServer.cpp -o ../backend/HttpServer.o $(CXXFLAGS)
+
+../backend/InputHelper.o: ../backend/InputHelper.cpp
+	$(CPP) -c ../backend/InputHelper.cpp -o ../backend/InputHelper.o $(CXXFLAGS)
+
+../backend/LuuTruFile.o: ../backend/LuuTruFile.cpp
+	$(CPP) -c ../backend/LuuTruFile.cpp -o ../backend/LuuTruFile.o $(CXXFLAGS)
+
+../backend/main.o: ../backend/main.cpp
+	$(CPP) -c ../backend/main.cpp -o ../backend/main.o $(CXXFLAGS)
+
+../backend/MenuDatPhong.o: ../backend/MenuDatPhong.cpp
+	$(CPP) -c ../backend/MenuDatPhong.cpp -o ../backend/MenuDatPhong.o $(CXXFLAGS)
+
+../backend/MenuDichVu.o: ../backend/MenuDichVu.cpp
+	$(CPP) -c ../backend/MenuDichVu.cpp -o ../backend/MenuDichVu.o $(CXXFLAGS)
+
+../backend/MenuKhachHang.o: ../backend/MenuKhachHang.cpp
+	$(CPP) -c ../backend/MenuKhachHang.cpp -o ../backend/MenuKhachHang.o $(CXXFLAGS)
+
+../backend/MenuPhong.o: ../backend/MenuPhong.cpp
+	$(CPP) -c ../backend/MenuPhong.cpp -o ../backend/MenuPhong.o $(CXXFLAGS)
+
+../backend/MenuThanhToan.o: ../backend/MenuThanhToan.cpp
+	$(CPP) -c ../backend/MenuThanhToan.cpp -o ../backend/MenuThanhToan.o $(CXXFLAGS)
+
+../backend/MenuThongKe.o: ../backend/MenuThongKe.cpp
+	$(CPP) -c ../backend/MenuThongKe.cpp -o ../backend/MenuThongKe.o $(CXXFLAGS)
+
+../backend/Nguoi.o: ../backend/Nguoi.cpp
+	$(CPP) -c ../backend/Nguoi.cpp -o ../backend/Nguoi.o $(CXXFLAGS)
+
+../backend/PhieuDatPhong.o: ../backend/PhieuDatPhong.cpp
+	$(CPP) -c ../backend/PhieuDatPhong.cpp -o ../backend/PhieuDatPhong.o $(CXXFLAGS)
+
+../backend/Phong.o: ../backend/Phong.cpp
+	$(CPP) -c ../backend/Phong.cpp -o ../backend/Phong.o $(CXXFLAGS)
+
+../backend/PhongCuThe.o: ../backend/PhongCuThe.cpp
+	$(CPP) -c ../backend/PhongCuThe.cpp -o ../backend/PhongCuThe.o $(CXXFLAGS)
+
+../backend/QuanLyKhachSan.o: ../backend/QuanLyKhachSan.cpp
+	$(CPP) -c ../backend/QuanLyKhachSan.cpp -o ../backend/QuanLyKhachSan.o $(CXXFLAGS)
+
+../backend/TaiKhoan.o: ../backend/TaiKhoan.cpp
+	$(CPP) -c ../backend/TaiKhoan.cpp -o ../backend/TaiKhoan.o $(CXXFLAGS)
+
+../backend/TienIch.o: ../backend/TienIch.cpp
+	$(CPP) -c ../backend/TienIch.cpp -o ../backend/TienIch.o $(CXXFLAGS)
+
+../backend/TrangThaiCuThe.o: ../backend/TrangThaiCuThe.cpp
+	$(CPP) -c ../backend/TrangThaiCuThe.cpp -o ../backend/TrangThaiCuThe.o $(CXXFLAGS)
+
+../backend/WebApi.o: ../backend/WebApi.cpp
+	$(CPP) -c ../backend/WebApi.cpp -o ../backend/WebApi.o $(CXXFLAGS)
+
+../backend/WebServer.o: ../backend/WebServer.cpp
+	$(CPP) -c ../backend/WebServer.cpp -o ../backend/WebServer.o $(CXXFLAGS)

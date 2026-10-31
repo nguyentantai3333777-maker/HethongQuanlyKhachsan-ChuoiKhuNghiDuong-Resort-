@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" preserveAspectRatio="xMidYMid slice">
+  <!-- Nen minh hoa tam cho dich vu -->
+  <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#e8d3bf"/><stop offset="1" stop-color="#b48a6a"/></linearGradient></defs>
+  <rect width="600" height="600" fill="url(#g)"/>
+  <g fill="#ffffff" opacity=".22">
+    <path d="M300 120 c70 80 70 170 0 250 c-70 -80 -70 -170 0 -250z"/>
+    <path d="M190 210 c90 20 140 90 110 180 c-90 -20 -140 -90 -110 -180z"/>
+    <path d="M410 210 c-90 20 -140 90 -110 180 c90 -20 140 -90 110 -180z"/>
+    <circle cx="300" cy="470" r="60"/>
+  </g>
+</svg>

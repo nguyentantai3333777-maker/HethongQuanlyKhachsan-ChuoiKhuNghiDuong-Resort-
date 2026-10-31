@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="vi" data-theme="dashboard">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Quản trị – Ocean Pearl Resort</title>
+  <link rel="icon" href="assets/icons/logo-oceanpearl.svg" type="image/svg+xml">
+  <!-- Playfair Display (tieu de) + Be Vietnam Pro (menu, bang, nut) - giong phong chu anh mau. Offline dung font he thong. -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Playfair+Display:wght@400;500;600&family=Dancing+Script:wght@500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/admin.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+  <link rel="stylesheet" href="css/rooms.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <link rel="stylesheet" href="css/oceanpearl.css">
+</head>
+<body>
+
+  <!-- ============== DANG NHAP: anh bien ben trai, form ben phai ============== -->
+  <section id="login-screen" class="login" hidden>
+    <div class="login__visual">
+      <a class="login__brand" href="index.html">
+        <img src="assets/icons/logo-oceanpearl.svg" alt="" width="62" height="50">
+        <span><b>Ocean Pearl</b><small>Resort</small></span>
+      </a>
+      <div class="login__caption">
+        <span class="bl-script">Nghỉ dưỡng để sống chậm hơn</span>
+        <h1>Trang quản trị</h1>
+        <p>Phòng, đặt phòng, khách hàng và hóa đơn của từng chi nhánh. Dữ liệu dùng chung với chế độ console.</p>
+      </div>
+    </div>
+    <div class="login__panel">
+      <form id="login-form" class="login__form" novalidate>
+        <h2>Đăng nhập</h2>
+        <p class="muted">Dùng tài khoản nhân viên được cấp.</p>
+        <label class="field"><span>Tên đăng nhập</span><input name="username" autocomplete="username" required></label>
+        <label class="field"><span>Mật khẩu</span><input name="password" type="password" autocomplete="current-password" required></label>
+        <button class="btn btn--primary btn--block" type="submit">Đăng nhập</button>
+        <a class="login__back" href="index.html">← Về website khách sạn</a>
+      </form>
+    </div>
+  </section>
+
+  <!-- ============== KHUNG QUAN TRI: SIDEBAR + KHU NOI DUNG ============== -->
+  <div id="app" class="app" hidden>
+    <!-- Sidebar (thu gon / mo rong; tren dien thoai la menu truot tu trai) -->
+    <aside class="sidebar" id="sidebar" aria-label="Menu quản trị">
+      <div class="sidebar__brand">
+        <a class="a-brand" href="#/dashboard">
+          <img src="assets/icons/logo-oceanpearl.svg" alt="" width="50" height="40">
+          <span><b>Ocean Pearl</b><small>Resort</small></span>
+        </a>
+        <button class="icon-btn sidebar__collapse" id="btn-collapse" type="button" aria-label="Thu gọn menu" title="Thu gọn / mở rộng"></button>
+      </div>
+      <nav class="sidebar__nav" id="nav" aria-label="Menu chính"></nav>
+    </aside>
+    <div class="sidebar__backdrop" id="sidebar-backdrop"></div>
+
+    <div class="main">
+      <header class="a-header">
+        <div class="a-header__row">
+          <button class="icon-btn a-burger" id="btn-menu" type="button" aria-label="Mở menu" aria-expanded="false" aria-controls="sidebar"></button>
+          <form class="a-search" id="global-search" role="search">
+            <span class="a-search__icon" aria-hidden="true"></span>
+            <input type="search" placeholder="Tìm mã phòng, khách, phiếu, hóa đơn…" aria-label="Tìm kiếm nhanh" maxlength="40">
+          </form>
+          <div class="a-header__actions">
+            <a class="a-link" href="index.html" target="_blank" rel="noopener">Website</a>
+            <div class="dropdown" id="notify">
+              <button class="icon-btn" type="button" aria-label="Thông báo" data-toggle></button>
+              <span class="badge-dot" hidden></span>
+              <div class="dropdown__menu dropdown__menu--wide" data-menu></div>
+            </div>
+            <div class="dropdown" id="user-menu">
+              <button class="user-chip" type="button" data-toggle>
+                <span class="avatar" id="user-avatar"></span>
+                <span class="user-chip__text"><b id="user-name"></b><small id="user-role"></small></span>
+              </button>
+              <div class="dropdown__menu" data-menu>
+                <div class="dropdown__info" id="user-info"></div>
+                <button type="button" class="dropdown__item" data-action="logout">Đăng xuất</button>
+              </div>
+            </div>
+            <a class="btn btn--gold a-cta" href="#/bookings?new=1" data-icon="calendarCheck">Đặt phòng</a>
+          </div>
+        </div>
+      </header>
+
+      <!-- Banner trang -->
+      <section class="a-banner">
+        <div class="a-container">
+          <h1 id="page-title">Dashboard</h1>
+          <p id="page-sub"></p>
+        </div>
+      </section>
+
+      <main class="a-container content" id="content" tabindex="-1"></main>
+    </div>
+  </div>
+
+  <!-- Modal & toast dung chung -->
+  <div class="modal" id="modal" hidden>
+    <div class="modal__backdrop" data-close></div>
+    <div class="modal__dialog" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+      <header class="modal__header">
+        <h2 id="modal-title"></h2>
+        <button class="icon-btn" type="button" data-close aria-label="Đóng"></button>
+      </header>
+      <div class="modal__body" id="modal-body"></div>
+      <footer class="modal__footer" id="modal-footer"></footer>
+    </div>
+  </div>
+  <div class="toasts" id="toasts" aria-live="polite"></div>
+
+  <!-- Thu tu nap: tien ich chung -> api -> khung -> bieu do -> tung trang -->
+  <script src="js/core.js"></script>
+  <script src="js/datefield.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/charts.js"></script>
+  <script src="js/dashboard.js"></script>
+  <script src="js/rooms.js"></script>
+  <script src="js/customers.js"></script>
+  <script src="js/bookings.js"></script>
+  <script src="js/services.js"></script>
+  <script src="js/staff.js"></script>
+  <script src="js/branches.js"></script>
+  <script src="js/payments.js"></script>
+  <script src="js/reports.js"></script>
+  <script src="js/settings.js"></script>
+  <script>App.start();</script>
+</body>
+</html>

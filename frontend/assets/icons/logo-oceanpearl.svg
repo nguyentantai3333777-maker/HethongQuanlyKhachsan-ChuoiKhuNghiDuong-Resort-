@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 64" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Ocean Pearl Resort: toa nha resort (vang gold) tren song bien (xanh) -->
+  <g stroke="#D9B45C" stroke-width="2.4">
+    <path d="M14 40V22l8-4v22"/>
+    <path d="M22 40V14l10-6 10 6v26"/>
+    <path d="M42 40V20l9 4v16"/>
+    <path d="M51 40V28l9 3v9"/>
+    <path d="M27 18h10M27 24h10M27 30h10M17 27h2M17 33h2M46 29h2M46 35h2"/>
+    <path d="M32 8V4"/>
+  </g>
+  <path d="M6 46c6-4 11-4 17 0s11 4 17 0 11-4 17 0 11 4 17 0" stroke="#8FD0F2" stroke-width="3"/>
+  <path d="M10 54c6-4 11-4 17 0s11 4 17 0 11-4 17 0" stroke="#8FD0F2" stroke-opacity=".6" stroke-width="2.6"/>
+</svg>
