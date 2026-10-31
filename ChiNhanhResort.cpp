@@ -1,75 +1,101 @@
+// ChiNhanhResort.cpp
 #include "ChiNhanhResort.h"
-
-#include <algorithm>
+#include "InputHelper.h"
 #include <stdexcept>
 
-ChiNhanhResort::ChiNhanhResort(const std::string& ma, const std::string& ten, const std::string& diaChi)
-    : maChiNhanh(ma), tenChiNhanh(ten), diaChi(diaChi) {}
+using namespace std;
 
-void ChiNhanhResort::themPhong(std::shared_ptr<Phong> phong) {
-    if (!phong)
-        throw std::invalid_argument("Phong khong hop le (nullptr)");
-    if (timPhong(phong->layMaPhong()))
-        throw std::invalid_argument("Ma phong da ton tai: " + phong->layMaPhong());
-    danhSachPhong.push_back(std::move(phong));
+ChiNhanhResort::ChiNhanhResort(const string &ma, const string &ten, const string &dc, const string &hl)
+    : maChiNhanh(ma), tenChiNhanh(InputHelper::trim(ten)), diaChi(InputHelper::trim(dc)),
+      hotline(InputHelper::trim(hl))
+{
+    if (!InputHelper::laMa(maChiNhanh, "CN"))
+        throw invalid_argument("Ma chi nhanh khong hop le.");
+    if (tenChiNhanh.empty())
+        throw invalid_argument("Ten chi nhanh khong duoc rong.");
+    if (tenChiNhanh.size() < 2 || tenChiNhanh.size() > 40 || !InputHelper::laChuThuan(tenChiNhanh))
+        throw invalid_argument("Ten chi nhanh chi duoc chua chu cai va khoang trang (2-40 ky tu), khong duoc co so.");
+    if (diaChi.empty())
+        throw invalid_argument("Dia chi chi nhanh khong duoc rong.");
+    if (!InputHelper::laDiaChi(diaChi))
+        throw invalid_argument("Dia chi chi nhanh 5-120 ky tu, gom chu, so va , . / - ( ) # (phai co chu cai).");
+    if (!InputHelper::laSoDienThoai(hotline))
+        throw invalid_argument("Hotline phai gom dung 10 chu so va bat dau bang 0.");
 }
 
-bool ChiNhanhResort::xoaPhong(const std::string& maPhong) {
-    auto it = std::find_if(danhSachPhong.begin(), danhSachPhong.end(),
-        [&](const std::shared_ptr<Phong>& p) { return p->layMaPhong() == maPhong; });
-    if (it == danhSachPhong.end()) return false;
-
-    // Không cho xoá phòng đang có khách ở hoặc đang được giữ chỗ
-    const std::string tt = (*it)->layTenTrangThai();
-    if (tt == TenTrangThai::DANG_O || tt == TenTrangThai::GIU_CHO) return false;
-
-    danhSachPhong.erase(it);
-    return true;
+void ChiNhanhResort::themPhong(const shared_ptr<Phong> &p)
+{
+    if (!p)
+        throw invalid_argument("Phong null.");
+    if (timPhong(p->layMaPhong()))
+        throw invalid_argument("Ma phong " + p->layMaPhong() + " da ton tai trong chi nhanh.");
+    if (coSoPhong(p->laySoPhong()))
+        throw invalid_argument("So phong " + p->laySoPhong() + " da ton tai trong chi nhanh.");
+    p->datChiNhanh(tenChiNhanh);
+    danhSachPhong.push_back(p);
 }
 
-std::shared_ptr<Phong> ChiNhanhResort::timPhong(const std::string& maPhong) const {
-    for (const auto& p : danhSachPhong)
-        if (p->layMaPhong() == maPhong) return p;
+void ChiNhanhResort::xoaPhong(const string &maPhong)
+{
+    for (size_t i = 0; i < danhSachPhong.size(); ++i)
+        if (danhSachPhong[i]->layMaPhong() == maPhong)
+        {
+            danhSachPhong.erase(danhSachPhong.begin() + (long)i);
+            return;
+        }
+    throw runtime_error("Khong tim thay phong " + maPhong + " trong chi nhanh.");
+}
+
+shared_ptr<Phong> ChiNhanhResort::timPhong(const string &maPhong) const
+{
+    for (auto &p : danhSachPhong)
+        if (p->layMaPhong() == maPhong)
+            return p;
     return nullptr;
 }
 
-std::vector<std::shared_ptr<Phong>> ChiNhanhResort::layPhongTrong(
-    const std::string& checkIn, const std::string& checkOut,
-    const std::vector<std::shared_ptr<PhieuDatPhong>>& dsPhieu) const {
-
-    std::vector<std::shared_ptr<Phong>> ketQua;
-    if (!(checkIn < checkOut)) return ketQua;   // khoảng ngày không hợp lệ
-
-    for (const auto& p : danhSachPhong) {
-        if (p->layTenTrangThai() == TenTrangThai::BAO_TRI) continue;
-
-        bool biTrung = false;
-        for (const auto& ph : dsPhieu) {
-            if (!ph || ph->kiemTraDaHuy()) continue;
-            if (ph->layPhong()->layMaPhong() != p->layMaPhong()) continue;
-            if (trungKhoangNgay(checkIn, checkOut, ph->layNgayCheckIn(), ph->layNgayCheckOut())) {
-                biTrung = true;
-                break;
-            }
-        }
-        if (!biTrung) ketQua.push_back(p);
-    }
-    return ketQua;
+bool ChiNhanhResort::coSoPhong(const string &soPhong, const string &boQuaMa) const
+{
+    for (auto &p : danhSachPhong)
+        if (p->laySoPhong() == soPhong && p->layMaPhong() != boQuaMa)
+            return true;
+    return false;
 }
 
-void ChiNhanhResort::themNhanVien(std::shared_ptr<NhanVien> nv) {
+int ChiNhanhResort::demPhong(MaTrangThai tt) const
+{
+    int d = 0;
+    for (auto &p : danhSachPhong)
+        if (p->layMaTrangThai() == tt)
+            ++d;
+    return d;
+}
+
+void ChiNhanhResort::themNhanVien(const shared_ptr<NhanVien> &nv)
+{
     if (!nv)
-        throw std::invalid_argument("Nhan vien khong hop le (nullptr)");
-    for (const auto& x : danhSachNhanVien)
-        if (x->layMaSo() == nv->layMaSo())
-            throw std::invalid_argument("Ma nhan vien da ton tai: " + nv->layMaSo());
-    danhSachNhanVien.push_back(std::move(nv));
+        throw invalid_argument("Nhan vien null.");
+    if (timNhanVien(nv->layMa()))
+        throw invalid_argument("Nhan vien da thuoc chi nhanh.");
+    nv->datMaChiNhanh(maChiNhanh);
+    danhSachNhanVien.push_back(nv);
 }
 
-double ChiNhanhResort::tinhCongSuatSuDung() const {
-    if (danhSachPhong.empty()) return 0.0;
-    int dangO = 0;
-    for (const auto& p : danhSachPhong)
-        if (p->layTenTrangThai() == TenTrangThai::DANG_O) ++dangO;
-    return static_cast<double>(dangO) / danhSachPhong.size() * 100.0;
+void ChiNhanhResort::xoaNhanVien(const string &maNV)
+{
+    for (size_t i = 0; i < danhSachNhanVien.size(); ++i)
+        if (danhSachNhanVien[i]->layMa() == maNV)
+        {
+            danhSachNhanVien.erase(danhSachNhanVien.begin() + (long)i);
+            return;
+        }
+    throw runtime_error("Khong tim thay nhan vien " + maNV + " trong chi nhanh.");
+}
+
+shared_ptr<NhanVien> ChiNhanhResort::timNhanVien(const string &maNV) const
+{
+    for (auto &nv : danhSachNhanVien)
+        if (nv->layMa() == maNV)
+            return nv;
+    return nullptr;
 }
