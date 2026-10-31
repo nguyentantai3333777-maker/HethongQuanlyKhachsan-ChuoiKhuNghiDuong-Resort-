@@ -1,0 +1,4 @@
+﻿username,password,role,maNhanVien
+admin,admin123,0,NV01
+user,user123,1,NV02
+namle,namle123,1,NV03
