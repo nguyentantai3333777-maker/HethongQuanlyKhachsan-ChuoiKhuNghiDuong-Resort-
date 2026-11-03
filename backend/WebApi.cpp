@@ -216,7 +216,8 @@ HttpResponse WebApi::xuLy(const HttpRequest &r)
         {
             ks.dongBoTheoNgay();
             HttpResponse res = apiKhach(r);
-            if (r.method == "POST" && res.status == 200 && r.path == "/api/khach/datphong")
+            if (r.method == "POST" && res.status == 200 &&
+                (r.path == "/api/khach/datphong" || r.path == "/api/khach/capnhatphieu"))
                 luu();
             return res;
         }
@@ -423,6 +424,11 @@ string WebApi::phieuJson(const PhieuDatPhong &ph) const
         .set("maKH", kh->layMa())
         .set("khach", kh->layHoTen())
         .set("sdt", kh->laySoDienThoai())
+        .set("email", kh->layEmail())
+        .set("cccd", kh->layCCCD())
+        .set("gioiTinh", kh->layGioiTinh())
+        .set("diaChiThuongTru", kh->layDiaChiThuongTru())
+        .set("quocTich", kh->layQuocTich())
         .set("hang", kh->hangThanhVien())
         .set("maPhong", p->layMaPhong())
         .set("soPhong", p->laySoPhong())
@@ -1790,8 +1796,8 @@ HttpResponse WebApi::apiKhach(const HttpRequest &r)
         string sdt = chuoi(r, "sdt", true), cccd = InputHelper::chuHoa(chuoi(r, "cccd", true));
         const string gioiTinh = chuoi(r, "gioiTinh");
         const string diaChi = chuoi(r, "diaChiThuongTru");
-        if (!diaChi.empty() && (diaChi.size() < 5 || diaChi.size() > 120 || !InputHelper::laChuThuan(diaChi)))
-            throw invalid_argument("Dia chi chi duoc chua chu cai va khoang trang.");
+        if (!diaChi.empty() && !InputHelper::laDiaChi(diaChi))
+            throw invalid_argument("Dia chi khong hop le! Cho phep chu, so va , . / - ( ) #, dai 5-120 ky tu.");
         // Kiem tra phong, ngay, dich vu TRUOC khi tao khach (khong de lai khach "mo coi" khi dat that bai)
         // va khong lo ten khach khac trong thong bao trung lich
         auto phongDat = ks.timPhong(chuoi(r, "maPhong", true));
@@ -1839,6 +1845,59 @@ HttpResponse WebApi::apiKhach(const HttpRequest &r)
                              .set("loai", loaiPhongToString(ph->layPhong()->layLoaiPhong()))
                              .set("ngayNhan", ph->layNgayNhan().toString()).set("ngayTra", ph->layNgayTra().toString())
                              .set("tong", tong).set("giamGia", kh->tyLeGiamGia()).str());
+    }
+    // Cap nhat thong tin khach tren phieu (website, khong can dang nhap):
+    // xac thuc bang ma phieu + SĐT hiện tại; chi sua dung khach gan phieu; ghi CSV qua luu().
+    if (r.path == "/api/khach/capnhatphieu" && r.method == "POST")
+    {
+        string ma = InputHelper::chuanHoaMa(chuoi(r, "ma", true));
+        string sdtCu = InputHelper::trim(chuoi(r, "sdt", true));
+        auto ph = ks.timPhieu(ma);
+        if (!ph || ph->layKhachHang()->laySoDienThoai() != sdtCu)
+            throw runtime_error("Khong tim thay phieu. Kiem tra lai ma phieu va so dien thoai.");
+        auto kh = ph->layKhachHang();
+        if (!kh)
+            throw runtime_error("Phieu khong gan khach hang.");
+
+        string hoTen = chuoi(r, "hoTen", true);
+        string sdtMoi = InputHelper::trim(chuoi(r, "sdtMoi"));
+        if (sdtMoi.empty())
+            sdtMoi = sdtCu;
+        if (!InputHelper::laSoDienThoai(sdtMoi))
+            throw invalid_argument("So dien thoai moi khong hop le (10 chu so, bat dau bang 0).");
+        string cccd = InputHelper::trim(chuoi(r, "cccd"));
+        string email = chuoi(r, "email");
+        string quocTich = chuoi(r, "quocTich");
+        string diaChi = chuoi(r, "diaChiThuongTru");
+        string gioiTinh = chuoi(r, "gioiTinh");
+
+        // Trùng SĐT/CCCD với khách khác (bỏ qua chính khách này)
+        ks.kiemTraTrungKhach(sdtMoi, cccd.empty() ? string() : cccd, kh->layMa());
+
+        kh->datHoTen(hoTen);
+        kh->datSoDienThoai(sdtMoi);
+        if (!cccd.empty())
+            kh->datCCCD(cccd);
+        kh->datEmail(email);
+        if (!quocTich.empty())
+            kh->datQuocTich(quocTich);
+        // Cho phep xoa/ghi dia chi (chuoi rong = chua cap nhat) khi client gui field
+        if (r.params.count("diaChiThuongTru"))
+        {
+            if (!diaChi.empty() && !InputHelper::laDiaChi(diaChi))
+                throw invalid_argument("Dia chi khong hop le! Cho phep chu, so va , . / - ( ) #, dai 5-120 ky tu.");
+            kh->datDiaChiThuongTru(diaChi);
+        }
+        if (r.params.count("gioiTinh"))
+            kh->datGioiTinh(gioiTinh);
+
+        JsonObject o;
+        o.setRaw("phieu", phieuJson(*ph));
+        o.setRaw("khach", khachJson(*kh));
+        if (!ph->layMaHoaDon().empty())
+            if (auto hd = ks.timHoaDon(ph->layMaHoaDon()))
+                o.setRaw("hoaDon", hoaDonJson(*hd));
+        return thanhCong(o.str(), "Cap nhat thong tin khach hang thanh cong.");
     }
     // Tra cuu phieu / hoa don cong khai: bat buoc ma phieu + so dien thoai dung
     if (r.path == "/api/khach/tracuuphieu")

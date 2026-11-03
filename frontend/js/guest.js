@@ -126,7 +126,7 @@ const Guest = (() => {
         </div>
         <div class="bl-price"><small>Từ</small><b>${money(l.giaTu)}</b><span>/ đêm</span></div>
         <div class="bl-card__foot">
-          <button class="btn btn--primary btn--sm" type="button" data-room-type="${esc(l.loai)}">Đặt ngay ${icon('arrowRight', 15)}</button>
+          <button class="btn btn--primary btn--sm" type="button" data-goto-check>Đặt ngay ${icon('arrowRight', 15)}</button>
           <button class="icon-circle" type="button" data-room-type="${esc(l.loai)}" aria-label="Xem danh sách phòng ${esc(l.loai)}">${icon('arrowRight', 18)}</button>
         </div>
       </div>
@@ -156,7 +156,7 @@ const Guest = (() => {
           title: g.title, img: SVC_IMG[loai] || 'dv-spa.jpg', fallback: 'service.svg', ic: g.icon, desc: g.desc,
           list: list.slice(0, 3).map((x) => [vi(x.ten), money(x.donGia)]),
           price: { tu: true, so: money(re.donGia), donVi: `/ ${vi(re.donVi)}` },
-          action: `<button class="btn btn--primary btn--sm" type="button" data-goto-rooms>Đặt ngay ${icon('arrowRight', 15)}</button>`,
+          action: `<button class="btn btn--primary btn--sm" type="button" data-goto-check>Đặt ngay ${icon('arrowRight', 15)}</button>`,
           more: `data-svc-group="${esc(loai)}"`,
         });
       }).join('');
@@ -201,16 +201,14 @@ const Guest = (() => {
     const f = ensureSearchDates();
     if (!f) return toast('Không tìm thấy form tìm phòng.', 'error');
     state.type = '';
-    await search({ scroll: false });
+    const ok = await search({ scroll: false, showResults: false });
+    if (!ok) return; // sai ngày/số khách: ở lại thanh kiểm tra phòng trống
+    // Ẩn danh sách phòng của lần xem trước (nếu có), chuyển xuống Phòng & Suite
+    const list = $('#room-list');
+    if (list) list.hidden = true;
     try { history.replaceState(null, '', '#rooms'); } catch (_) { location.hash = '#rooms'; }
     const roomsSec = document.getElementById('rooms');
     if (roomsSec) roomsSec.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    // Sau khi cuộn tới Phòng & Suite, hiện kết quả phòng trống (nếu có)
-    const res = document.getElementById('results');
-    if (res) {
-      res.hidden = false;
-      setTimeout(() => res.scrollIntoView({ behavior: 'smooth', block: 'start' }), 350);
-    }
     if (!(state.rooms || []).length) {
       toast('Không tìm thấy phòng trống phù hợp với điều kiện tìm kiếm', 'error');
     }
@@ -251,7 +249,7 @@ const Guest = (() => {
     try {
       const d = await Api.get('khach/danhsachphong', {
         loai: roomType,
-        maCN: v.maCN || '',
+        maCN: '',
         ngayNhan: v.ngayNhan,
         soDem: nights,
         soNguoi,
@@ -453,12 +451,12 @@ const Guest = (() => {
     openBooking(list[0].ma);
   }
 
-  // Từ mục Dịch vụ: đưa khách tới Phòng & Suite (không tự chọn phòng / mở form)
-  function goToRooms() {
+  // Mọi nút "Đặt phòng / Đặt ngay" (thanh điều hướng, Phòng & Suite, Dịch vụ, Ưu đãi…) → thanh kiểm tra phòng trống
+  function goToCheck() {
     if (!$('#modal')?.hidden) closeModal();
-    const sec = document.getElementById('rooms');
+    const sec = document.getElementById('check');
     if (sec) sec.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    if (history.replaceState) history.replaceState(null, '', '#rooms');
+    try { history.replaceState(null, '', '#check'); } catch (_) { /* bỏ qua */ }
   }
 
   function showServiceGroup(loai) {
@@ -471,7 +469,7 @@ const Guest = (() => {
         ${list.map((x) => `<tr><td><b>${esc(vi(x.ten))}</b></td><td class="muted">${esc(vi(x.moTa))}</td><td class="num">${money(x.donGia)} / ${esc(vi(x.donVi))}</td></tr>`).join('')}
         </tbody></table></div>
         <p class="muted" style="margin:14px 0 0">Chọn dịch vụ ở bước điền thông tin đặt phòng; tiền dịch vụ tính vào hóa đơn khi trả phòng.</p>`,
-      footer: [{ text: 'Đóng' }, { text: 'Đặt phòng', cls: 'btn--gold', onClick: () => { closeModal(); goToRooms(); } }],
+      footer: [{ text: 'Đóng' }, { text: 'Đặt phòng', cls: 'btn--gold', onClick: () => { closeModal(); goToCheck(); } }],
     });
   }
 
@@ -496,16 +494,16 @@ const Guest = (() => {
     return f;
   }
 
-  async function search({ scroll = true } = {}) {
+  async function search({ scroll = true, showResults = true } = {}) {
     const f = ensureSearchDates();
-    if (!f) return toast('Không tìm thấy form tìm phòng.', 'error');
+    if (!f) { toast('Không tìm thấy form tìm phòng.', 'error'); return false; }
     const v = Object.fromEntries(new FormData(f));
     const nights = daysBetween(v.ngayNhan, v.ngayTra);
-    if (!v.ngayNhan || v.ngayNhan < todayIso()) return toast('Ngày nhận phòng phải từ hôm nay trở đi.', 'error');
-    if (!(nights > 0)) return toast('Ngày trả phòng phải sau ngày nhận phòng.', 'error');
-    if (nights > 60) return toast('Đặt trực tuyến tối đa 60 đêm.', 'error');
+    if (!v.ngayNhan || v.ngayNhan < todayIso()) { toast('Ngày nhận phòng phải từ hôm nay trở đi.', 'error'); return false; }
+    if (!(nights > 0)) { toast('Ngày trả phòng phải sau ngày nhận phòng.', 'error'); return false; }
+    if (nights > 60) { toast('Đặt trực tuyến tối đa 60 đêm.', 'error'); return false; }
     const soNguoi = Number(v.soNguoi) || 1;
-    if (soNguoi < 1 || soNguoi > 20) return toast('Số khách phải từ 1 đến 20.', 'error');
+    if (soNguoi < 1 || soNguoi > 20) { toast('Số khách phải từ 1 đến 20.', 'error'); return false; }
     const btn = f.querySelector('button[type=submit], button.btn--primary');
     if (btn) { btn.disabled = true; btn.textContent = 'Đang tìm…'; }
     try {
@@ -519,14 +517,16 @@ const Guest = (() => {
       state.rooms = Array.isArray(d.phong) ? d.phong : [];
       renderResults();
       const res = $('#results');
-      if (res) res.hidden = false;
+      if (res) res.hidden = !showResults;
       setStep(2);
       if (scroll) {
         const target = res || $('#check');
         if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
+      return true;
     } catch (e) {
       toast(e.message || 'Không tìm được phòng. Vui lòng thử lại.', 'error');
+      return false;
     } finally {
       if (btn) { btn.disabled = false; btn.textContent = 'Tìm phòng'; }
     }
@@ -576,7 +576,7 @@ const Guest = (() => {
     if (v.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.email)) e.email = 'Email không hợp lệ.';
     if (v.quocTich && !/^[\p{L} ]+$/u.test(v.quocTich)) e.quocTich = 'Quốc tịch chỉ gồm chữ cái.';
     if (v.gioiTinh && !['Nam', 'Nữ', 'Khác'].includes(v.gioiTinh)) e.gioiTinh = 'Giới tính không hợp lệ.';
-    if (v.diaChiThuongTru && !/^[\p{L} ]{5,120}$/u.test(v.diaChiThuongTru)) e.diaChiThuongTru = 'Địa chỉ chỉ gồm chữ cái và khoảng trắng.';
+    if (v.diaChiThuongTru && !/^(?=.*\p{L})[\p{L}\d ,./\-()#']{5,120}$/u.test(v.diaChiThuongTru)) e.diaChiThuongTru = 'Địa chỉ thường trú không hợp lệ. Vui lòng nhập đầy đủ số nhà và tên đường hoặc thông tin địa chỉ.';
     if (!v.dongY) e.dongY = 'Vui lòng xác nhận thông tin.';
     return e;
   }
@@ -624,7 +624,7 @@ const Guest = (() => {
             <div class="form-section">Dịch vụ đặt trước</div>
             <div class="g-svc-pick full">${services.map((d) => `<label><span>${esc(vi(d.ten))} <span class="muted">${esc(vi(d.loai))}</span></span>
               <span class="muted">${money(d.donGia)} / ${esc(vi(d.donVi))}</span>
-              <input type="number" min="0" max="100" value="0" data-svc="${d.ma}" aria-label="Số lượng ${esc(vi(d.ten))}"></label>`).join('')}</div>
+              <input type="number" min="0" max="100" step="1" value="0" data-svc="${d.ma}" aria-label="Số lượng ${esc(vi(d.ten))}"></label>`).join('')}</div>
             <label class="field field--check full"><input type="checkbox" name="dongY"> Tôi xác nhận thông tin trên là chính xác. Thanh toán khi trả phòng.</label>
           </div>
         </div>
@@ -726,6 +726,108 @@ const Guest = (() => {
 
   /* ---------- Tra cuu phieu / hoa don ---------- */
   function moneySafe(v) { return money(Number(v) || 0); }
+
+  /* ---------- Luu chinh sua phieu tren trinh duyet (localStorage, khong dung backend) ---------- */
+  const LS_PHIEU = 'oceanpearl_guest_phieu_edits';
+  let billView = null; // { ma, sdt, base, hoaDon, draft: { khach?, dichVuQty? } | null, saved: bool }
+
+  function loadPhieuEdits() {
+    try { return JSON.parse(localStorage.getItem(LS_PHIEU) || '{}') || {}; }
+    catch (_) { return {}; }
+  }
+  /** Chi luu so luong dich vu theo ma phieu. Khong luu thong tin khach (server la nguon chinh). */
+  function savePhieuEdit(ma, data) {
+    if (!ma) return;
+    const all = loadPhieuEdits();
+    if (data && data.dichVuQty && typeof data.dichVuQty === 'object') {
+      all[ma] = { dichVuQty: data.dichVuQty, updatedAt: Date.now() };
+    } else {
+      delete all[ma];
+    }
+    localStorage.setItem(LS_PHIEU, JSON.stringify(all));
+  }
+  function getPhieuEdit(ma) {
+    const e = loadPhieuEdits()[ma];
+    if (!e || !e.dichVuQty) return null;
+    return { dichVuQty: e.dichVuQty };
+  }
+  /** Xoa field khach con sot trong localStorage (ban cu) de khong ghi de phieu/khach khac. */
+  function scrubPhieuEdits() {
+    try {
+      const all = loadPhieuEdits();
+      let changed = false;
+      Object.keys(all).forEach((key) => {
+        if (all[key] && all[key].khach) {
+          delete all[key].khach;
+          changed = true;
+        }
+        if (all[key] && !all[key].dichVuQty) {
+          delete all[key];
+          changed = true;
+        }
+      });
+      if (changed) localStorage.setItem(LS_PHIEU, JSON.stringify(all));
+    } catch (_) { /* ignore */ }
+  }
+
+  function catalogDichVu() { return state.info?.dichVu || []; }
+
+  /**
+   * Gop du lieu hien thi:
+   * - Thong tin khach: chi API (base) hoac draft trong phien. KHONG lay tu localStorage.
+   * - Dich vu: draft hoac localStorage gan dung theo ma phieu.
+   */
+  function mergePhieu(base, draft, saved) {
+    const ph = { ...base, dichVu: (base.dichVu || []).map((d) => ({ ...d })) };
+
+    if (draft && draft.khach) {
+      const k = draft.khach;
+      if (k.hoTen != null && k.hoTen !== '') ph.khach = k.hoTen;
+      if (k.sdt != null && k.sdt !== '') ph.sdt = k.sdt;
+      if (k.email != null) ph.email = k.email;
+      if (k.diaChiThuongTru != null) ph.diaChiThuongTru = k.diaChiThuongTru;
+      if (k.cccd != null) ph.cccd = k.cccd;
+      if (k.gioiTinh != null) ph.gioiTinh = k.gioiTinh;
+      if (k.quocTich != null) ph.quocTich = k.quocTich;
+    }
+
+    const qtySrc = (draft && draft.dichVuQty) || (saved && saved.dichVuQty);
+    if (qtySrc && typeof qtySrc === 'object') {
+      const cat = catalogDichVu();
+      const byMa = Object.fromEntries(cat.map((d) => [d.ma, d]));
+      (base.dichVu || []).forEach((d) => { if (!byMa[d.ma]) byMa[d.ma] = d; });
+      const list = [];
+      let tongDV = 0;
+      Object.keys(qtySrc).forEach((maDV) => {
+        const qty = Math.max(0, Math.floor(Number(qtySrc[maDV]) || 0));
+        if (qty <= 0) return;
+        const d = byMa[maDV];
+        if (!d) return;
+        const donGia = Number(d.donGia) || 0;
+        const thanhTien = donGia * qty;
+        tongDV += thanhTien;
+        list.push({
+          ma: d.ma, ten: d.ten || d.ma, loai: d.loai || '', soLuong: qty,
+          donGia, thanhTien, donVi: d.donVi || d.donViTinh || '',
+        });
+      });
+      ph.dichVu = list;
+      ph.tienDichVu = tongDV;
+    }
+    return ph;
+  }
+
+  function currentPhieu() {
+    if (!billView) return null;
+    return mergePhieu(billView.base, billView.draft, getPhieuEdit(billView.ma));
+  }
+
+  function qtyMapFromPhieu(ph) {
+    const m = {};
+    (ph.dichVu || []).forEach((d) => { m[d.ma] = Number(d.soLuong) || 0; });
+    return m;
+  }
+
   function renderHoaDon(hd) {
     const lines = (hd.chiTiet || []).map((c) =>
       `<div class="invoice__line"><span>${esc(vi(c.noiDung || c.loai))} ×${c.soLuong}</span><span>${moneySafe(c.thanhTien)}</span></div>`).join('');
@@ -747,21 +849,256 @@ const Guest = (() => {
       <div class="invoice__total"><span>Tổng / còn lại</span><span>${moneySafe(hd.tong)} / ${moneySafe(hd.conLai)}</span></div>
     </div>`;
   }
-  function renderPhieu(ph) {
-    return `<div class="g-lookup__bill">
-      <h3>Phiếu ${esc(ph.ma)} · ${esc(ph.trangThai || '')}</h3>
-      <dl class="g-lookup__meta">
-        <div><dt>Khách</dt><dd>${esc(ph.khach || '')}</dd></div>
-        <div><dt>SĐT</dt><dd>${esc(ph.sdt || '')}</dd></div>
-        <div><dt>Phòng</dt><dd>${esc(ph.loaiPhong || '')} ${esc(ph.soPhong || '')}</dd></div>
-        <div><dt>Chi nhánh</dt><dd>${esc(vi(ph.chiNhanh || ''))}</dd></div>
-        <div><dt>Ngày ở</dt><dd>${esc(ph.ngayNhan || '')} → ${esc(ph.ngayTra || '')} (${ph.soDem || 0} đêm)</dd></div>
-        <div><dt>Tiền phòng / DV</dt><dd>${moneySafe(ph.tienPhong)} / ${moneySafe(ph.tienDichVu)}</dd></div>
-        <div><dt>Cọc</dt><dd>${moneySafe(ph.tienCoc)}${ph.ptCoc ? ' · ' + esc(vi(ph.ptCoc)) : ''}</dd></div>
-        <div><dt>Mã hóa đơn</dt><dd>${ph.maHoaDon ? esc(ph.maHoaDon) : 'Chưa có (chưa check-out)'}</dd></div>
-      </dl>
+
+  function renderPhieu(ph, opts = {}) {
+    const hasDraft = !!(opts.draft);
+    const saved = opts.saved;
+    const dv = ph.dichVu || [];
+    const dvLines = dv.length
+      ? dv.map((d) => `<div class="invoice__line"><span>${esc(vi(d.ten || d.ma))} <span class="muted">×${d.soLuong}</span></span><span>${moneySafe(d.thanhTien != null ? d.thanhTien : (d.donGia || 0) * (d.soLuong || 0))}</span></div>`).join('')
+      : `<p class="muted" style="margin:0 0 8px">Chưa chọn dịch vụ đặt trước.</p>`;
+    const draftTag = hasDraft ? `<span class="g-lookup__tag g-lookup__tag--warn">Chưa xác nhận</span>` : (saved ? `<span class="g-lookup__tag">Đã lưu trên trình duyệt</span>` : '');
+    return `<div class="g-lookup__bill" data-phieu="${esc(ph.ma)}">
+      <h3>Phiếu ${esc(ph.ma)} · ${esc(vi(ph.trangThai || ''))} ${draftTag}</h3>
+
+      <div class="g-lookup__section">
+        <div class="g-lookup__section-hd">
+          <strong>Thông tin khách hàng</strong>
+          <button type="button" class="btn btn--sm btn--outline" data-edit-khach>Chỉnh sửa</button>
+        </div>
+        <dl class="g-lookup__meta">
+          <div><dt>Họ tên</dt><dd>${esc(ph.khach || '')}</dd></div>
+          <div><dt>SĐT</dt><dd>${esc(ph.sdt || '')}</dd></div>
+          ${ph.cccd ? `<div><dt>CCCD / Hộ chiếu</dt><dd>${esc(ph.cccd)}</dd></div>` : ''}
+          ${ph.email ? `<div><dt>Email</dt><dd>${esc(ph.email)}</dd></div>` : ''}
+          ${ph.diaChiThuongTru ? `<div class="full"><dt>Địa chỉ thường trú</dt><dd>${esc(ph.diaChiThuongTru)}</dd></div>` : ''}
+          ${ph.gioiTinh ? `<div><dt>Giới tính</dt><dd>${esc(ph.gioiTinh)}</dd></div>` : ''}
+          ${ph.quocTich ? `<div><dt>Quốc tịch</dt><dd>${esc(vi(ph.quocTich))}</dd></div>` : ''}
+          ${ph.hang != null ? `<div><dt>Hạng thành viên</dt><dd>${esc(vi(ph.hang) || ph.hang)}</dd></div>` : ''}
+        </dl>
+      </div>
+
+      <div class="g-lookup__section">
+        <div class="g-lookup__section-hd"><strong>Phòng & lưu trú</strong></div>
+        <dl class="g-lookup__meta">
+          <div><dt>Phòng</dt><dd>${esc(ph.loaiPhong || '')} ${esc(ph.soPhong || '')}</dd></div>
+          <div><dt>Chi nhánh</dt><dd>${esc(vi(ph.chiNhanh || ''))}</dd></div>
+          <div><dt>Ngày ở</dt><dd>${esc(ph.ngayNhan || '')} → ${esc(ph.ngayTra || '')} (${ph.soDem || 0} đêm)</dd></div>
+          <div><dt>Số khách</dt><dd>${ph.soNguoi != null ? ph.soNguoi : '—'}</dd></div>
+          <div><dt>Mã hóa đơn</dt><dd>${ph.maHoaDon ? esc(ph.maHoaDon) : 'Chưa có (chưa check-out)'}</dd></div>
+        </dl>
+      </div>
+
+      <div class="g-lookup__section">
+        <div class="g-lookup__section-hd">
+          <strong>Dịch vụ đặt trước</strong>
+          <button type="button" class="btn btn--sm btn--outline" data-edit-svc>Chỉnh sửa</button>
+        </div>
+        ${dvLines}
+        <div class="invoice__line"><span>Tổng tiền dịch vụ</span><span>${moneySafe(ph.tienDichVu)}</span></div>
+      </div>
+
+      <div class="g-lookup__section">
+        <div class="g-lookup__section-hd"><strong>Tạm tính</strong></div>
+        <div class="invoice__line"><span>Tiền phòng</span><span>${moneySafe(ph.tienPhong)}</span></div>
+        <div class="invoice__line"><span>Tiền dịch vụ</span><span>${moneySafe(ph.tienDichVu)}</span></div>
+        <div class="invoice__line"><span>Cọc</span><span>${moneySafe(ph.tienCoc)}${ph.ptCoc ? ' · ' + esc(vi(ph.ptCoc)) : ''}</span></div>
+        <div class="invoice__total"><span>Phòng + dịch vụ</span><span>${moneySafe((Number(ph.tienPhong) || 0) + (Number(ph.tienDichVu) || 0))}</span></div>
+      </div>
+
+      <div class="g-lookup__actions">
+        <button type="button" class="btn btn--primary" data-confirm-phieu ${hasDraft ? '' : 'disabled'}>Xác nhận</button>
+      </div>
     </div>`;
   }
+
+  function paintBill() {
+    const box = $('#g-lookup-result');
+    if (!box || !billView) return;
+    const saved = getPhieuEdit(billView.ma);
+    const ph = mergePhieu(billView.base, billView.draft, saved);
+    box.innerHTML = renderPhieu(ph, { draft: billView.draft, saved: !!saved })
+      + (billView.hoaDon ? renderHoaDon(billView.hoaDon) : '');
+    box.hidden = false;
+  }
+
+  function openEditKhach() {
+    if (!billView) return;
+    const ph = currentPhieu();
+    const body = modal({
+      title: 'Chỉnh sửa thông tin khách hàng',
+      body: `<form class="form-grid" id="g-edit-khach" novalidate>
+        <label class="field full"><span>Họ tên</span><input name="hoTen" value="${esc(ph.khach || '')}" autocomplete="name"></label>
+        <label class="field"><span>Số điện thoại</span><input name="sdt" inputmode="numeric" value="${esc(ph.sdt || '')}"></label>
+        <label class="field"><span>CCCD / CMND / Hộ chiếu</span><input name="cccd" value="${esc(ph.cccd || '')}" placeholder="Không bắt buộc"></label>
+        <label class="field"><span>Giới tính</span><select name="gioiTinh">
+          <option value="">Chưa cập nhật</option>
+          ${['Nam', 'Nữ', 'Khác'].map((x) => `<option${x === (ph.gioiTinh || '') ? ' selected' : ''}>${x}</option>`).join('')}
+        </select></label>
+        <label class="field full"><span>Địa chỉ thường trú</span><input name="diaChiThuongTru" value="${esc(ph.diaChiThuongTru || '')}" placeholder="Không bắt buộc"></label>
+        <label class="field"><span>Email</span><input name="email" type="email" value="${esc(ph.email || '')}" placeholder="Không bắt buộc"></label>
+        <label class="field"><span>Quốc tịch</span><input name="quocTich" value="${esc(ph.quocTich || 'Việt Nam')}"></label>
+      </form>`,
+      footer: [
+        { text: 'Hủy', cls: 'btn--outline' },
+        { text: 'Thay đổi', cls: 'btn--primary', onClick: async () => {
+          const form = $('#g-edit-khach');
+          const fd = new FormData(form);
+          const v = Object.fromEntries(fd.entries());
+          const e = {};
+          if (!/^[\p{L} ]{2,50}$/u.test(String(v.hoTen || '').trim())) e.hoTen = 'Họ tên chỉ gồm chữ cái và khoảng trắng.';
+          if (!/^0\d{9}$/.test(String(v.sdt || '').trim())) e.sdt = 'Số điện thoại gồm 10 chữ số, bắt đầu bằng 0.';
+          if (v.cccd && !/^(\d{9}|\d{12}|[A-Za-z][A-Za-z0-9]{7,8})$/.test(String(v.cccd).trim())) e.cccd = 'CMND/CCCD gồm 9 hoặc 12 chữ số, hoặc hộ chiếu hợp lệ.';
+          if (v.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(v.email).trim())) e.email = 'Email không hợp lệ.';
+          if (v.diaChiThuongTru && !/^(?=.*\p{L})[\p{L}\d ,./\-()#']{5,120}$/u.test(String(v.diaChiThuongTru).trim())) e.diaChiThuongTru = 'Địa chỉ không hợp lệ.';
+          if (v.quocTich && !/^[\p{L} ]+$/u.test(String(v.quocTich).trim())) e.quocTich = 'Quốc tịch chỉ gồm chữ cái.';
+          form.querySelectorAll('.field.is-invalid').forEach((f) => f.classList.remove('is-invalid'));
+          form.querySelectorAll('.field__error').forEach((x) => x.remove());
+          Object.entries(e).forEach(([k, msg]) => {
+            const field = form.querySelector(`[name="${k}"]`)?.closest('.field');
+            if (!field) return;
+            field.classList.add('is-invalid');
+            field.insertAdjacentHTML('beforeend', `<small class="field__error">${esc(msg)}</small>`);
+          });
+          if (Object.keys(e).length) { toast('Vui lòng kiểm tra lại thông tin.', 'error'); throw new Error('invalid'); }
+          const prev = billView.draft || getPhieuEdit(billView.ma) || {};
+          billView.draft = {
+            ...prev,
+            khach: {
+              hoTen: String(v.hoTen).trim(),
+              sdt: String(v.sdt).trim(),
+              cccd: String(v.cccd || '').trim(),
+              email: String(v.email || '').trim(),
+              diaChiThuongTru: String(v.diaChiThuongTru || '').trim(),
+              gioiTinh: String(v.gioiTinh || '').trim(),
+              quocTich: String(v.quocTich || '').trim(),
+            },
+            dichVuQty: prev.dichVuQty || qtyMapFromPhieu(mergePhieu(billView.base, null, getPhieuEdit(billView.ma))),
+          };
+          closeModal();
+          paintBill();
+          toast('Đã áp dụng tạm thời. Nhấn Xác nhận để lưu trên trình duyệt.', 'info');
+        } },
+      ],
+    });
+  }
+
+  function openEditSvc() {
+    if (!billView) return;
+    const ph = currentPhieu();
+    const qty0 = qtyMapFromPhieu(ph);
+    const cat = catalogDichVu();
+    // Gop catalog + dich vu da co tren phieu (neu catalog chua load)
+    const seen = new Set();
+    const rows = [];
+    cat.forEach((d) => { seen.add(d.ma); rows.push(d); });
+    (billView.base.dichVu || []).forEach((d) => { if (!seen.has(d.ma)) { seen.add(d.ma); rows.push(d); } });
+    if (!rows.length) {
+      toast('Chưa có danh sách dịch vụ. Vui lòng tải lại trang.', 'error');
+      return;
+    }
+    modal({
+      title: 'Dịch vụ đặt trước',
+      body: `<div class="g-svc-pick" id="g-edit-svc">${rows.map((d) => {
+        const q = qty0[d.ma] || 0;
+        return `<label><span>${esc(vi(d.ten))} <span class="muted">${esc(vi(d.loai || ''))}</span></span>
+          <span class="muted">${money(d.donGia)} / ${esc(vi(d.donVi || d.donViTinh || 'lần'))}</span>
+          <input type="number" min="0" max="100" step="1" value="${q}" data-svc="${esc(d.ma)}" aria-label="Số lượng ${esc(vi(d.ten))}"></label>`;
+      }).join('')}</div>
+      <p class="muted" style="margin:12px 0 0;font-size:13px">Số lượng = 0 nghĩa là không sử dụng dịch vụ. Chỉ chấp nhận số nguyên ≥ 0.</p>`,
+      footer: [
+        { text: 'Hủy', cls: 'btn--outline' },
+        { text: 'Thay đổi', cls: 'btn--primary', onClick: async () => {
+          const root = $('#g-edit-svc');
+          const qty = {};
+          let bad = false;
+          root.querySelectorAll('[data-svc]').forEach((inp) => {
+            const raw = String(inp.value || '').trim();
+            if (raw === '') { qty[inp.dataset.svc] = 0; return; }
+            if (!/^\d+$/.test(raw)) { bad = true; inp.closest('label')?.classList.add('is-invalid'); return; }
+            const n = Math.floor(Number(raw));
+            if (n < 0 || n > 100) { bad = true; return; }
+            qty[inp.dataset.svc] = n;
+            inp.closest('label')?.classList.remove('is-invalid');
+          });
+          if (bad) { toast('Số lượng phải là số nguyên từ 0 đến 100.', 'error'); throw new Error('invalid'); }
+          const prev = billView.draft || getPhieuEdit(billView.ma) || {};
+          billView.draft = {
+            ...prev,
+            khach: prev.khach || undefined,
+            dichVuQty: qty,
+          };
+          closeModal();
+          paintBill();
+          toast('Đã cập nhật tạm thời tiền dịch vụ. Nhấn Xác nhận để lưu.', 'info');
+        } },
+      ],
+    });
+  }
+
+  async function confirmPhieuEdits() {
+    if (!billView || !billView.draft) {
+      toast('Không có thay đổi cần xác nhận.', 'info');
+      return;
+    }
+    const draft = billView.draft;
+    const prev = getPhieuEdit(billView.ma) || {};
+    const kh = draft.khach || {
+      hoTen: billView.base.khach,
+      sdt: billView.base.sdt,
+      email: billView.base.email || '',
+      cccd: billView.base.cccd || '',
+      diaChiThuongTru: billView.base.diaChiThuongTru || '',
+      gioiTinh: billView.base.gioiTinh || '',
+      quocTich: billView.base.quocTich || '',
+    };
+    // SĐT xác thực = số đang lưu trên server (base), không dùng số mới trong draft
+    const sdtAuth = String(billView.base.sdt || billView.sdt || '').trim();
+    try {
+      // Chi goi API khi co chinh sua thong tin khach; dich vu van co the chi luu local
+      if (draft.khach) {
+        const data = await Api.post('khach/capnhatphieu', {
+          ma: billView.ma,
+          sdt: sdtAuth,
+          hoTen: kh.hoTen || '',
+          sdtMoi: kh.sdt || sdtAuth,
+          cccd: kh.cccd || '',
+          email: kh.email || '',
+          quocTich: kh.quocTich || '',
+          diaChiThuongTru: kh.diaChiThuongTru != null ? kh.diaChiThuongTru : '',
+          gioiTinh: kh.gioiTinh != null ? kh.gioiTinh : '',
+        });
+        if (data && data.phieu) {
+          billView.base = data.phieu;
+          billView.sdt = data.phieu.sdt;
+          if (data.hoaDon) billView.hoaDon = data.hoaDon;
+        }
+      }
+      // Dich vu: chi luu theo ma phieu; khong luu khach vao localStorage
+      const dichVuQty = draft.dichVuQty || prev.dichVuQty;
+      if (dichVuQty) savePhieuEdit(billView.ma, { dichVuQty });
+      else savePhieuEdit(billView.ma, {});
+      scrubPhieuEdits();
+      billView.draft = null;
+      paintBill();
+      toast(draft.khach
+        ? 'Cập nhật thông tin khách hàng thành công. Có thể tra cứu bằng số điện thoại mới.'
+        : 'Đã lưu thay đổi dịch vụ trên trình duyệt.', 'success');
+    } catch (err) {
+      toast(err.message || 'Cập nhật thất bại. Dữ liệu chưa được lưu.', 'error');
+    }
+  }
+
+  function bindBillActions(box) {
+    if (!box || box._billBound) return;
+    box._billBound = true;
+    box.addEventListener('click', (e) => {
+      if (e.target.closest('[data-edit-khach]')) { e.preventDefault(); openEditKhach(); return; }
+      if (e.target.closest('[data-edit-svc]')) { e.preventDefault(); openEditSvc(); return; }
+      if (e.target.closest('[data-confirm-phieu]')) { e.preventDefault(); confirmPhieuEdits(); return; }
+    });
+  }
+
   async function lookupBill(e) {
     e.preventDefault();
     const f = e.target;
@@ -772,19 +1109,34 @@ const Guest = (() => {
     const btn = f.querySelector('button');
     btn.disabled = true; btn.textContent = 'Đang tra…';
     try {
-      // Thuuuuuuuuuu: ma HD -> hoa don; ma DP -> phieu (+ hoa don neu co)
       const isHD = /^HD/i.test(ma);
       if (isHD) {
+        billView = null;
         const hd = await Api.get('khach/tracuhoadon', { ma, sdt });
         box.innerHTML = renderHoaDon(hd);
       } else {
         const d = await Api.get('khach/tracuuphieu', { ma, sdt });
-        box.innerHTML = renderPhieu(d.phieu) + (d.hoaDon ? renderHoaDon(d.hoaDon) : '');
+        // Bo field khach sot trong localStorage; thong tin khach chi lay tu API
+        scrubPhieuEdits();
+        billView = {
+          ma: d.phieu.ma,
+          sdt: d.phieu.sdt || sdt,
+          base: d.phieu,
+          hoaDon: d.hoaDon || null,
+          draft: null,
+        };
+        paintBill();
+        bindBillActions(box);
+        box.hidden = false;
+        box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        btn.disabled = false; btn.textContent = 'Tra cứu';
+        return;
       }
       box.hidden = false;
       box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     } catch (err) {
       box.hidden = true;
+      billView = null;
       toast(err.message || 'Không tra cứu được.', 'error');
     } finally {
       btn.disabled = false; btn.textContent = 'Tra cứu';
@@ -799,7 +1151,7 @@ const Guest = (() => {
     const sticky = $('#g-sticky-cta');
     const onScrollCta = () => {
       if (!sticky) return;
-      const zone = $('#dat-phong');
+      const zone = $('#check');
       const pastHero = window.scrollY > 420;
       const inZone = zone && zone.getBoundingClientRect().top < 120 && zone.getBoundingClientRect().bottom > 80;
       sticky.classList.toggle('is-visible', pastHero && !inZone);
@@ -836,7 +1188,13 @@ const Guest = (() => {
     onScroll();
 
     $('#modal').addEventListener('click', (e) => { if (e.target.closest('[data-close]')) closeModal(); });
-    document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !$('#modal').hidden) closeModal(); });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !$('#modal').hidden) closeModal();
+      if ((e.key === 'Enter' || e.key === ' ') && e.target.matches?.('article[data-room-type]')) {
+        e.preventDefault();
+        showRoomListByType(e.target.dataset.roomType || '');
+      }
+    });
 
     // Form kiem tra phong
     const f = $('#g-check-form');
@@ -897,7 +1255,15 @@ const Guest = (() => {
         return;
       }
 
-      // Thẻ loại phòng (hình / tên / Đặt ngay / mũi tên / cả thẻ) → danh sách phòng
+      // "Đặt ngay" / "Đặt phòng" (thanh điều hướng, Phòng & Suite, Dịch vụ, Ưu đãi) → thanh kiểm tra phòng trống
+      if (e.target.closest('[data-goto-check]') || e.target.closest('a[href="#check"]')) {
+        e.preventDefault();
+        e.stopPropagation();
+        goToCheck();
+        return;
+      }
+
+      // Thẻ loại phòng (hình / tên / mũi tên / cả thẻ) → hiện toàn bộ danh sách phòng bên dưới
       const roomTypeEl = e.target.closest('[data-room-type]');
       if (roomTypeEl) {
         e.preventDefault();
@@ -907,12 +1273,6 @@ const Guest = (() => {
         return;
       }
 
-      // Dịch vụ: Đặt ngay → cuộn tới mục Phòng & Suite để khách tự chọn phòng
-      if (e.target.closest('[data-goto-rooms]')) {
-        e.preventDefault();
-        goToRooms();
-        return;
-      }
       const sg = e.target.closest('[data-svc-group]');
       if (sg) return showServiceGroup(sg.dataset.svcGroup);
 
@@ -939,6 +1299,7 @@ const Guest = (() => {
 
   async function start() {
     bindLayout();
+    scrubPhieuEdits(); // don dep ban chinh sua khach cu trong localStorage
     try {
       state.info = await Api.get('khach/thongtin');
       renderInfo();

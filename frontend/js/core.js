@@ -91,6 +91,7 @@ const VI = {
   'Viet Nam': 'Việt Nam', 'Tien mat': 'Tiền mặt', 'Chuyen khoan': 'Chuyển khoản', 'The tin dung': 'Thẻ tín dụng',
   'Vi dien tu': 'Ví điện tử', 'Tien coc': 'Tiền cọc', 'Quan ly': 'Quản lý', 'Le tan': 'Lễ tân', 'Buong phong': 'Buồng phòng',
   'Ky thuat': 'Kỹ thuật', 'Phuc vu': 'Phục vụ', 'Quy Nhon': 'Quy Nhơn', 'Ky Co - Eo Gio': 'Kỳ Co - Eo Gió', 'Tour Ky Co Eo Gio': 'Tour Kỳ Co - Eo Gió', 'Dang luu tru': 'Đang lưu trú', 'Sap den': 'Sắp đến',
+  'Cho nhan phong': 'Chờ Nhận Phòng',
   'Kênh Đặt Phòng Online': 'Kênh Đặt Phòng Online', 'Dat phong online': 'Kênh Đặt Phòng Online',
   suat: 'suất', lan: 'lần', nguoi: 'người',
   Anh: 'Anh', 'Thanh pho': 'Thành phố', Vuon: 'Vườn', Bien: 'Biển', 'Ho boi': 'Hồ bơi', Rung: 'Rừng',
@@ -126,7 +127,7 @@ const Input = (() => {
     thuc:     { clean: (v) => v.replace(/[^\d.]/g, '').replace(/^(\d*\.\d*)\..*$/, '$1'), max: 8, ok: /^\d+(\.\d+)?$/, msg: 'Chỉ nhập chữ số (có thể có một dấu chấm).', mode: 'decimal', num: true },
     chu:      { clean: (v) => v.replace(new RegExp(`[^${L} ]`, 'gu'), '').replace(/ {2,}/g, ' '), max: 50, ok: new RegExp(`^(?=.*${L})[${L} ]{2,50}$`, 'u'), msg: 'Chỉ nhập chữ cái và khoảng trắng (2–50 ký tự), không dùng số.' },
     tenrieng: { clean: (v) => v.replace(new RegExp(`[^${L}\\d .'-]`, 'gu'), ''), max: 50, ok: new RegExp(`^(?=.*${L})[${L}\\d .'-]{2,50}$`, 'u'), msg: 'Gồm chữ, số, khoảng trắng và - . \' (2–50 ký tự, phải có chữ).' },
-    diachi:   { clean: (v) => v.replace(new RegExp(`[^${L} ]`, 'gu'), '').replace(/ {2,}/g, ' '), max: 120, ok: new RegExp(`^(?=.*${L})[${L} ]{5,120}$`, 'u'), msg: 'Địa chỉ chỉ gồm chữ cái và khoảng trắng (5–120 ký tự).', optional: true },
+    diachi:   { clean: (v) => v.replace(new RegExp(`[^${L}\\d ,./\\-()#']`, 'gu'), '').replace(/ {2,}/g, ' '), max: 120, ok: new RegExp(`^(?=.*${L})[${L}\\d ,./\\-()#']{5,120}$`, 'u'), msg: 'Địa chỉ không hợp lệ. Vui lòng nhập đầy đủ số nhà và tên đường hoặc thông tin địa chỉ (chữ, số, , . / - ( ) #, 5–120 ký tự).', optional: true },
     ngay:     { clean: (v) => v.replace(/[^0-9/]/g, '').slice(0, 10), max: 10, ok: /^\d{2}\/\d{2}\/\d{4}$/, msg: 'Ngày sinh theo dạng ngày/tháng/năm.', optional: true },
     username: { clean: (v) => v.replace(/[^A-Za-z0-9_.]/g, ''), max: 20, ok: /^[A-Za-z0-9_.]{3,20}$/, msg: '3–20 ký tự: chữ không dấu, số, _ hoặc .' },
     email:    { clean: (v) => v.replace(/\s/g, ''), max: 80, ok: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, msg: 'Email không hợp lệ.', optional: true },
@@ -149,11 +150,12 @@ const Input = (() => {
     return BY_NAME[el.name] || null;
   };
 
-  // Lan dau focus: doi type=number thanh text (type=number van cho go chu e, +, -) va dat maxlength / inputmode
+  // Lan dau focus: doi type=number thanh text (type=number van cho go chu e, +, -) va dat maxlength / inputmode.
+  // Ngoai le: o so luong dich vu (data-svc) giu type=number de nut tang/giam cua trinh duyet van hoat dong + min=0.
   document.addEventListener('focusin', (e) => {
     const el = e.target, k = kieuOf(el), r = k && R[k];
     if (!r) return;
-    if (r.num && el.type === 'number') el.type = 'text';
+    if (r.num && el.type === 'number' && el.dataset.svc === undefined) el.type = 'text';
     if (r.mode) el.inputMode = r.mode;
     if (!el.maxLength || el.maxLength < 0) el.maxLength = r.max;
     el.autocomplete = el.autocomplete || 'off';

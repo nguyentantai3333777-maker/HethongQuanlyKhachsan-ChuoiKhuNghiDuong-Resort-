@@ -426,6 +426,17 @@
 .g-lookup__meta { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 20px; margin-bottom: 16px; font-size: 14px; }
 .g-lookup__meta dt { color: var(--muted); }
 .g-lookup__meta dd { margin: 0; font-weight: 600; }
+.g-lookup__meta .full { grid-column: 1 / -1; }
+.g-lookup__section { margin: 18px 0; padding-top: 12px; border-top: 1px solid #eef1f4; }
+.g-lookup__section:first-of-type { border-top: 0; padding-top: 0; }
+.g-lookup__section-hd { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
+.g-lookup__section-hd strong { font-size: 15px; }
+.g-lookup__actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 16px; }
+.g-lookup__note { font-size: 12.5px; line-height: 1.45; margin: 12px 0 0; }
+.g-lookup__tag { display: inline-block; margin-left: 8px; padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 600; background: #e8f5ee; color: #1b7a4a; vertical-align: middle; }
+.g-lookup__tag--warn { background: #fff4e5; color: #a65b00; }
+.g-lookup__bill + .g-lookup__bill { margin-top: 18px; padding-top: 18px; border-top: 1px dashed var(--border-color); }
+#g-edit-svc label.is-invalid { border-color: #c0392b; }
 
 @media (max-width: 1100px) {
   .g-cat-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
@@ -436,4 +447,5 @@
   .g-offer-grid { grid-template-columns: 1fr; }
   .g-lookup__form { grid-template-columns: 1fr; }
   .g-lookup__meta { grid-template-columns: 1fr; }
+  .g-lookup__section-hd { flex-wrap: wrap; }
 }
